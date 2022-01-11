@@ -18,6 +18,7 @@
 #include "objectstore_errors.h"
 #include "securec.h"
 #include "string_utils.h"
+#include "process_communicator_impl.h"
 
 namespace OHOS::ObjectStore {
 FlatObjectStorageEngine::~FlatObjectStorageEngine()
@@ -35,7 +36,19 @@ uint32_t FlatObjectStorageEngine::Open()
         LOG_INFO("FlatObjectDatabase: No need to reopen it");
         return SUCCESS;
     }
-    storeManager_ = std::make_shared<DistributedDB::KvStoreDelegateManager>("objectstore", "user0");
+    auto status = DistributedDB::KvStoreDelegateManager::SetProcessLabel("objectstoreDB", "default");
+    if (status != DistributedDB::DBStatus::OK) {
+        LOG_ERROR("delegate SetProcessLabel failed: %{public}d.", static_cast<int>(status));
+        return SUCCESS;
+    }
+
+    auto communicator = std::make_shared<ProcessCommunicatorImpl>();
+    auto commStatus = DistributedDB::KvStoreDelegateManager::SetProcessCommunicator(communicator);
+    if (commStatus != DistributedDB::DBStatus::OK) {
+        LOG_ERROR("set distributed db communicator failed.");
+        return SUCCESS;
+    }
+    storeManager_ = std::make_shared<DistributedDB::KvStoreDelegateManager>("objectstore", "default");
     if (storeManager_ == nullptr) {
         LOG_ERROR("FlatObjectStorageEngine::make shared fail");
         return ERR_MOMEM;
@@ -82,14 +95,14 @@ uint32_t FlatObjectStorageEngine::CreateTable(const std::string &key)
             kvStore = kvStoreNbDelegate;
             LOG_INFO("create table result %{public}d", status);
         });
-    /* bool autoSync = true;
+    bool autoSync = true;
     DistributedDB::PragmaData data = static_cast<DistributedDB::PragmaData>(&autoSync);
     LOG_INFO("start Pragma");
     status = kvStore->Pragma(DistributedDB::AUTO_SYNC, data);
     if (status != DistributedDB::DBStatus::OK) {
         LOG_ERROR("FlatObjectStorageEngine::CreateTable %s getkvstore fail[%d]", key.c_str(), status);
         return ERR_DE_GETKV_FAIL;
-    } */
+    }
     LOG_INFO("create table %{public}s success", key.c_str());
     delegates.insert_or_assign(key, kvStore);
     return SUCCESS;
@@ -237,7 +250,6 @@ uint32_t FlatObjectStorageEngine::RegisterObserver(const std::string &key, std::
     }
     auto delegate = delegates.at(key);
     std::vector<uint8_t> tmpKey;
-    tmpKey.assign(key.begin(), key.end());
     LOG_INFO("start RegisterObserver %{public}s", key.c_str());
     DistributedDB::DBStatus status =
         delegate->RegisterObserver(tmpKey, DistributedDB::ObserverMode::OBSERVER_CHANGES_NATIVE, watcher.get());

@@ -167,15 +167,15 @@ void EventListener::Add(napi_env env, napi_value handler)
         handlers_ = temp;
     }
     napi_create_reference(env, handler, 1, &handlers_->callbackRef);
-    LOG_ERROR("add %{public}p in  %{public}p", handler, handlers_->callbackRef);
+    LOG_INFO("add %{public}p in  %{public}p", handler, handlers_->callbackRef);
 }
 
 void WatcherImpl::OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData) {
+    LOG_ERROR("hanlu inin %{public}s", sessionid.c_str());
     watcher_->Emit("change", sessionid, changedData);
 }
 
 void WatcherImpl::OnDeleted(const std::string &sessionid) {
-    // todo watcher_->Emit();
 }
 
 WatcherImpl::WatcherImpl(JSWatcher *watcher) : watcher_(watcher) {}

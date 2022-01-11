@@ -141,10 +141,12 @@ uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
 
 WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher) : objectWatcher_(objectWatcher)
 {
+    LOG_INFO("hanlu create");
 }
 
 void WatcherProxy::OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData)
 {
+    LOG_INFO("hanlu inin");
     objectWatcher_->OnChanged(sessionid, changedData);
 }
 

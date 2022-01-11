@@ -29,6 +29,7 @@ config("objectstore_config") {
     "../../frameworks/jskitsimpl/include/common",
     "../../frameworks/innerkitsimpl/include/adaptor",
     "../../frameworks/innerkitsimpl/include/common",
+    "../../frameworks/innerkitsimpl/include/communicator",
     "../../interfaces/innerkits",
     "//third_party/bounds_checking_function/include"
   ]
@@ -60,6 +61,14 @@ ohos_shared_library("distributeddataobject") {
     "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_impl.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/flat_object_storage_engine.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/flat_object_store.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/app_device_handler.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/app_pipe_handler.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/app_pipe_mgr.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/ark_communication_provider.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/communication_provider.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/communication_provider_impl.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/process_communicator_impl.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/softbus_adapter_standard.cpp",
   ]
 
   configs = [ ":objectstore_config" ]
@@ -72,7 +81,8 @@ ohos_shared_library("distributeddataobject") {
       ":distributed_data_object_js"
   ]
   external_deps = [
-    "hiviewdfx_hilog_native:libhilog"
+    "hiviewdfx_hilog_native:libhilog",
+    "dsoftbus_standard:softbus_client",
   ]
 
   public_configs = [ ":objectstore_public_config" ]

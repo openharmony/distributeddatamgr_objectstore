@@ -23,29 +23,16 @@ import { AsyncCallback, Callback } from './basic';
  * @devices phone, tablet
  */
 declare namespace distributedobjectstore {
-    function joinSession(obj: object, sessionId: string): DistributedObject;
-    function leaveSession(obj: DistributedObject): object;
-    function on(type: 'change', object: DistributedObject, callback: Callback<ChangedDataObserver>): void;
-    function off(type: 'change', object: DistributedObject, callback?: Callback<ChangedDataObserver>): void;
-    function on(type: 'status', object: DistributedObject, callback: Callback<ObjectStatusObserver>): void;
-    function off(type: 'status', object: DistributedObject, callback?: Callback<ObjectStatusObserver>): void;
+    function distributed(obj: object): DistributedObject;
 
-
-    type ValueType = number | string | boolean | object;
     class DistributedObject {
-        put(key: string, value: ValueType): void;
-        get(key: string): ValueType;
+        setSession(sessionId?: String): void;
+        on(type: 'change', callback: Callback<ChangedDataObserver>): void;
+        off(type: 'change', callback?: Callback<ChangedDataObserver>): void;
     }
-
     interface ChangedDataObserver {
         sessionId: string;
         changeData: Array<string>;
-    }
-
-    interface ObjectStatusObserver {
-        deviceId: string;
-        sessionId: string;
-        status: "connected"|"disconnected";
     }
 }
 

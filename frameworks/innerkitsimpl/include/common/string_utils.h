@@ -23,6 +23,7 @@
 
 #include "bytes.h"
 #include "logger.h"
+#include "distributed_object.h"
 #include "objectstore_errors.h"
 
 namespace OHOS::ObjectStore {
@@ -47,11 +48,11 @@ static std::string BytesToStr(const std::vector<uint8_t> src)
 }
 static uint32_t BytesToStrWithType(Bytes input, std::string &str)
 {
-    if (input.end() - input.begin() <= sizeof(int32_t)) {
+    if (input.end() - input.begin() <= sizeof(Type)) {
         LOG_ERROR("StringUtils:BytesToStrWithType get input len err.");
         return ERR_DATA_LEN;
     }
-    std::vector<uint8_t>::const_iterator first = input.begin() + sizeof(int32_t);
+    std::vector<uint8_t>::const_iterator first = input.begin() + sizeof(Type);
     std::vector<uint8_t>::const_iterator end = input.end();
     Bytes rstStr(first, end);
     str.assign(reinterpret_cast<char *>(rstStr.data()), rstStr.size());
