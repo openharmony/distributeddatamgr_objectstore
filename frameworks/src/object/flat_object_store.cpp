@@ -101,7 +101,17 @@ const std::vector<std::string> &FlatObjectStore::GetRemoteStoreIds()
 uint32_t FlatObjectStore::Put(const FlatObject &flatObject)
 {
     if (IsLocalObject(flatObject.GetId())) {
-        uint32_t status = storageEngine_->PutHash(flatObject.GetId(), flatObject.GetFields());
+        FlatObject localObject;
+        uint32_t status = Get(flatObject.GetId(), localObject);
+        if (status != SUCCESS) {
+            LOG_ERROR("FlatObjectStore: Failed to get object from local storage");
+            return status;
+        }
+        if (localObject.GetFields() == flatObject.GetFields()) {
+            LOG_INFO("FlatObjectStore::Put no data changed");
+            return SUCCESS;
+        }
+        status = storageEngine_->PutHash(flatObject.GetId(), flatObject.GetFields());
         if (status != SUCCESS) {
             LOG_ERROR("FlatObjectStore: Failed to put object to local storage");
             return status;
