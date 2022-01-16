@@ -46,4 +46,4 @@ namespace OHOS::ObjectStore {
         }                                               \
     }
 } // namespace OHOS::ObjectStore
-#endif //JS_COMMON_H
+#endif // JS_COMMON_H

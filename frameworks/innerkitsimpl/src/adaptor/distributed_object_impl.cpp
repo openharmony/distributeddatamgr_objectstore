@@ -22,8 +22,6 @@ namespace OHOS::ObjectStore {
 DistributedObjectImpl::~DistributedObjectImpl()
 {
 }
-namespace {
-
 void PutNum(void *val, int32_t offset, int32_t valLen, Bytes &data)
 {
     uint32_t len = valLen + offset;
@@ -51,7 +49,6 @@ uint32_t GetNum(Bytes &data, int32_t offset, void *val, int32_t valLen)
     }
     return SUCCESS;
 }
-} // namespace
 
 uint32_t DistributedObjectImpl::PutDouble(const std::string &key, double value)
 {
@@ -165,5 +162,4 @@ DistributedObjectImpl::DistributedObjectImpl(const std::string &sessionId, FlatO
     : sessionId_(sessionId), flatObjectStore_(flatObjectStore)
 {
 }
-
 } // namespace OHOS::ObjectStore

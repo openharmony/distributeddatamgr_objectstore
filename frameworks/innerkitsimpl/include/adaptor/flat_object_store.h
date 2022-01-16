@@ -23,7 +23,6 @@
 #include "flat_object_storage_engine.h"
 
 namespace OHOS::ObjectStore {
-
 class FlatObjectWatcher : public TableWatcher {
 public:
     FlatObjectWatcher(const std::string &sessionId) : TableWatcher(sessionId)

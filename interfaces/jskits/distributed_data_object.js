@@ -31,13 +31,18 @@ class Distributed {
     setSession(sessionId) {
         if (sessionId == null || sessionId == undefined || sessionId.length == 0) {
             leaveSession(this.__proxy);
-            return;
+            return false;
         }
         // leave last session
         if (this.__proxy[SESSION_ID] != undefined && this.__proxy[SESSION_ID] != null) {
             leaveSession(this.__proxy);
         }
-        this.__proxy = joinSession(this.__proxy, sessionId);
+        let object = joinSession(this.__proxy, sessionId);
+        if (object != null) {
+            this.__proxy = object;
+            return true;
+        }
+        return false;
     };
 
     on(type, callback) {

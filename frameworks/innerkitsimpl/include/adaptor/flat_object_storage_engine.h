@@ -31,7 +31,6 @@ public:
     ~FlatObjectStorageEngine() override;
     uint32_t Open() override;
     uint32_t Close() override;
-    //delete local table
     uint32_t DeleteTable(const std::string &key) override;
     uint32_t CreateTable(const std::string &key) override;
     uint32_t GetTable(const std::string &key, std::map<std::string, Value> &result) override;
@@ -41,13 +40,13 @@ public:
     uint32_t RegisterObserver(const std::string &key, std::shared_ptr<TableWatcher> watcher) override;
     uint32_t UnRegisterObserver(const std::string &key) override;
     uint32_t ChangeKey(const std::string &oldKey, const std::string &newKey) override;
-
-    bool opened_ = false;
+// todo 直接用storeManager_判斷
+    bool isOpened_ = false;
 
 private:
     std::shared_mutex operationMutex_{};
     std::shared_ptr<DistributedDB::KvStoreDelegateManager> storeManager_;
-    std::map<std::string, DistributedDB::KvStoreNbDelegate *> delegates;
+    std::map<std::string, DistributedDB::KvStoreNbDelegate *> delegates_;
     std::map<std::string, std::shared_ptr<TableWatcher>> observerMap_;
 };
 } // namespace OHOS::ObjectStore

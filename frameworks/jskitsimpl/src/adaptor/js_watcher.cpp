@@ -17,16 +17,16 @@
 
 #include <cstring>
 
-#include "js_common.h"
 #include "js_util.h"
 #include "logger.h"
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "objectstore_errors.h"
+#include "uv.h"
 
 namespace OHOS::ObjectStore {
 JSWatcher::JSWatcher(const napi_env env, DistributedObjectStore *objectStore, DistributedObject *object)
-    : env_(env), objectStore_(objectStore), object_(object)
+    : UvQueue(env), env_(env), objectStore_(objectStore), object_(object)
 {
     listeners_[EVENT_CHANGE].type_ = "change";
     listeners_[EVENT_STATUS].type_ = "status";
@@ -75,30 +75,18 @@ void JSWatcher::Off(const char *type, napi_value handler)
 
 void JSWatcher::Emit(const char *type, const std::string &sessionId, const std::vector<std::string> &changeData)
 {
-    LOG_ERROR("gogogo %{public}s", sessionId.c_str());
+    if (changeData.empty()) {
+        LOG_ERROR("empty change");
+        return;
+    }
+    LOG_ERROR("start %{public}s, %{public}s", sessionId.c_str(), changeData.at(0).c_str());
     Event event = Find(type);
     if (event == EVENT_UNKNOWN) {
         LOG_ERROR("unknow %{public}s", type);
         return;
     }
     for (EventHandler *handler = listeners_[event].handlers_; handler != nullptr; handler = handler->next) {
-        napi_value callback = nullptr;
-        napi_value result = nullptr;
-        napi_value global = nullptr;
-        napi_value argv[2] = { nullptr };
-        napi_status status = napi_get_reference_value(env_, handler->callbackRef, &callback);
-        ASSERT_MATCH_ELSE_RETURN_VOID(status == napi_ok);
-        status = napi_get_global(env_, &global);
-        ASSERT_MATCH_ELSE_RETURN_VOID(status == napi_ok);
-        JSUtil::SetValue(env_, sessionId, argv[0]);
-        JSUtil::SetValue(env_, changeData, argv[1]);
-        LOG_INFO("start call %{public}p", callback);
-        status = napi_call_function(env_, global, callback, 2, argv, &result);
-        if (status != napi_ok) {
-            LOG_ERROR("notify data change failed status:%{public}d callback:%{public}p in %{public}p", status,
-                callback, handler->callbackRef);
-        }
-        LOG_INFO("end call %{public}p", callback);
+        CallFunction(sessionId, changeData, handler->callbackRef);
     }
 }
 

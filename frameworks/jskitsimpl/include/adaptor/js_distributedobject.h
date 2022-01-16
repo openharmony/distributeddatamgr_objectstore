@@ -39,4 +39,4 @@ private:
 };
 } // namespace OHOS::ObjectStore
 
-#endif //HANLU_JS_DISTRIBUTEDOBJECT_H
+#endif

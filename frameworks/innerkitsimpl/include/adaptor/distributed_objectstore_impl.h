@@ -52,7 +52,6 @@ public:
 private:
     std::shared_ptr<ObjectWatcher> objectWatcher_;
 };
-
 } // namespace OHOS::ObjectStore
 
 #endif // DISTRIBUTED_OBJECTSTORE_H

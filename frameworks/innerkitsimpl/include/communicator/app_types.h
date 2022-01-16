@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace ObjectStore {
-
 struct PipeInfo {
     std::string pipeId;
 };
@@ -66,8 +65,6 @@ enum class Status {
     REPEATED_REGISTER = APP_DISTRIBUTEDDATAMGR_ERR_OFFSET + 14,
     CREATE_SESSION_ERROR = APP_DISTRIBUTEDDATAMGR_ERR_OFFSET + 15,
 };
-
 } // namespace ObjectStore
 } // namespace OHOS
-
 #endif // APP_DISTRIBUTED_KVSTORE_TYPES_H

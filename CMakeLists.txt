@@ -25,6 +25,7 @@ add_library(hanlu
         frameworks/innerkitsimpl/src/communicator/communication_provider_impl.cpp
         frameworks/innerkitsimpl/src/communicator/process_communicator_impl.cpp
         frameworks/innerkitsimpl/src/communicator/softbus_adapter_standard.cpp
+        frameworks/innerkitsimpl/src/common/uv_queue.cpp
         frameworks/jskitsimpl/src/adaptor/js_watcher.cpp
         frameworks/jskitsimpl/src/adaptor/js_distributedobject.cpp
         frameworks/jskitsimpl/src/adaptor/js_object_wrapper.cpp

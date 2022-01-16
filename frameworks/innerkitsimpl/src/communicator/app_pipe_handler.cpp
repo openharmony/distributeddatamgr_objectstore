@@ -15,9 +15,9 @@
 
 #include "app_pipe_handler.h"
 
-#include <logger.h>
-
 #include <string>
+
+#include "logger.h"
 
 namespace OHOS {
 namespace ObjectStore {

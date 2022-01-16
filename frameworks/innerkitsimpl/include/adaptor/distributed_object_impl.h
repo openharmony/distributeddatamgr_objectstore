@@ -21,11 +21,9 @@
 #include "flat_object_store.h"
 
 namespace OHOS::ObjectStore {
-
 class DistributedObjectImpl : public DistributedObject {
 public:
     DistributedObjectImpl(const std::string &sessionId, FlatObjectStore *flatObjectStore);
-
     ~DistributedObjectImpl();
     uint32_t PutDouble(const std::string &key, double value) override;
     uint32_t PutBoolean(const std::string &key, bool value) override;

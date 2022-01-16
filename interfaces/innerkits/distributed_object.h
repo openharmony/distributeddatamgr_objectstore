@@ -20,9 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "flat_object_store.h"
-#include "watcher.h"
-
 namespace OHOS::ObjectStore {
 enum Type : uint8_t {
     TYPE_STRING = 0,
@@ -42,12 +39,8 @@ public:
     virtual std::string &GetSessionId() = 0;
 };
 
-class ObjectWatcher : public FlatObjectWatcher {
+class ObjectWatcher{
 public:
-    ObjectWatcher(const std::string &sessionId) : FlatObjectWatcher(sessionId)
-    {
-    }
-
     virtual void OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData) = 0;
     virtual void OnDeleted(const std::string &sessionid) = 0;
 };

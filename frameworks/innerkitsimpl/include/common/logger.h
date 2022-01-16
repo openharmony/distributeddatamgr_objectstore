@@ -15,7 +15,6 @@
 
 #ifndef OBJECT_STORE_LOGGER_H
 #define OBJECT_STORE_LOGGER_H
-#include <atomic>
 #include <memory>
 #ifdef HILOG_ENABLE
 #include "hilog/log.h"
@@ -37,7 +36,6 @@ static const OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001650, "ObjectS
 #define LOG_FATAL(fmt, ...)               \
     ((void)OHOS::HiviewDFX::HiLog::Fatal( \
         LABEL, "%{public}d: %{public}s " fmt " ", __LINE__, __FUNCTION__, ##__VA_ARGS__))
-
 } // namespace OHOS::ObjectStore
 #else
 #include <stdio.h>

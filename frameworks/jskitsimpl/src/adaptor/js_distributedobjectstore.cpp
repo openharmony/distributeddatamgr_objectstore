@@ -22,6 +22,7 @@
 #include "logger.h"
 #include "napi/native_node_api.h"
 #include "objectstore_errors.h"
+#include "js_util.h"
 
 namespace OHOS::ObjectStore {
 constexpr size_t TYPE_SIZE = 10;
@@ -45,7 +46,7 @@ napi_value JSDistributedObjectStore::NewDistributedObject(
     return result;
 }
 
-//function createObjectSync(sessionId: string): DistributedObject;
+// function createObjectSync(sessionId: string): DistributedObject;
 napi_value JSDistributedObjectStore::JSCreateObjectSync(napi_env env, napi_callback_info info)
 {
     LOG_INFO("start JSCreateObjectSync");
@@ -54,8 +55,7 @@ napi_value JSDistributedObjectStore::JSCreateObjectSync(napi_env env, napi_callb
     napi_value argv[2] = { 0 };
     napi_value thisVar = nullptr;
     void *data = nullptr;
-    char sessionId[SESSION_ID_SIZE] = { 0 };
-    size_t sessionIdLen = 0;
+    std::string sessionId;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     ASSERT_MATCH_ELSE_RETURN_NULL(argc >= requireArgc);
@@ -65,7 +65,7 @@ napi_value JSDistributedObjectStore::JSCreateObjectSync(napi_env env, napi_callb
         CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
 
         if (i == 0 && valueType == napi_string) {
-            status = napi_get_value_string_utf8(env, argv[i], sessionId, SESSION_ID_SIZE, &sessionIdLen);
+            status = JSUtil::GetValue(env, argv[i], sessionId);
             CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
         } else {
             LOG_ERROR("type dismatch");
@@ -79,7 +79,7 @@ napi_value JSDistributedObjectStore::JSCreateObjectSync(napi_env env, napi_callb
     return NewDistributedObject(env, objectInfo, object);
 }
 
-//function destroyObjectSync(sessionId: string): number;
+// function destroyObjectSync(sessionId: string): number;
 napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_callback_info info)
 {
     LOG_INFO("start");
@@ -88,8 +88,7 @@ napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_call
     napi_value argv[1] = { 0 };
     napi_value thisVar = nullptr;
     void *data = nullptr;
-    char sessionId[SESSION_ID_SIZE] = { 0 };
-    size_t sessionIdLen = 0;
+    std::string sessionId;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     ASSERT_MATCH_ELSE_RETURN_NULL(argc >= requireArgc);
@@ -97,7 +96,7 @@ napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_call
     status = napi_typeof(env, argv[0], &valueType);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     CHECK_EQUAL_WITH_RETURN_NULL(valueType, napi_string);
-    status = napi_get_value_string_utf8(env, argv[0], sessionId, SESSION_ID_SIZE, &sessionIdLen);
+    status = status = JSUtil::GetValue(env, argv[0], sessionId);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
 
     DistributedObjectStore *objectInfo = DistributedObjectStore::GetInstance();
@@ -108,7 +107,7 @@ napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_call
     return result;
 }
 
-//function sync(object_: DistributedObject): number;
+// function sync(object_: DistributedObject): number;
 napi_value JSDistributedObjectStore::JSSync(napi_env env, napi_callback_info info)
 {
     LOG_INFO("start");

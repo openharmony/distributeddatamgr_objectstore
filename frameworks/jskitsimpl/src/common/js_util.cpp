@@ -58,7 +58,6 @@ napi_status JSUtil::GetValue(napi_env env, napi_value in, std::string &out)
         GET_AND_THROW_LAST_ERROR(env);
         return status;
     }
-    LOG_DEBUG("napi_value -> std::string get length %{public}d", (int)maxLen);
     char *buf = new (std::nothrow) char[maxLen + STR_TAIL_LENGTH];
     if (buf != nullptr) {
         size_t len = 0;

@@ -57,6 +57,5 @@ public:
     virtual uint32_t UnRegisterObserver(const std::string &key) = 0;
     virtual uint32_t ChangeKey(const std::string &oldKey, const std::string &newKey) = 0;
 };
-
 } // namespace OHOS::ObjectStore
 #endif

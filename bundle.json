@@ -1,0 +1,57 @@
+{
+    "name": "@ohos/distributeddatamgr_objectstore", 
+    "version": "",                              
+    "description": "The distributed data object management framework is an object-oriented in-memory data managment framework",  
+    "homePage": "https://gitee.com/openharmony",
+    "license": "Apache V2",
+    "repository": "https://gitee.com/openharmony/distributeddatamgr_objectstore ",
+    "domain": "os",
+    "language": "",
+    "publishAs": "code-segment",
+    "private": false,
+    "scripts": {},
+    "tags": [
+        "foundation"
+    ],
+    "envs": [],
+    "dirs": [],
+    "author": {
+        "name": "",
+        "email": "",
+        "url": ""
+    },
+    "contributors": [
+        {
+            "name": "",
+            "email": "",
+            "url": ""
+        }
+    ],
+    "segment": {
+        "destPath": "foundation/distributeddatamgr/objectstore"
+    },
+    "component": {
+        "name": "distributeddataobject",
+        "subsystem": "distributeddatamgr",
+        "syscap": [
+            "SystemCapability.Data.DATA_DISTRIBUTEDDATAMGR"
+        ],
+        "features": [],
+        "adapted_system_type": [
+            "standard"
+        ],
+        "rom": "",
+        "ram": "",
+        "deps": {
+            "components": [],
+            "third_party": []
+        },
+        "build": {
+            "sub_component": [
+                "//foundation/distributeddatamgr/objectstore/interfaces/jskits:build_module"
+            ],
+            "inner_kits": [],
+            "test": []
+        }
+    }
+}

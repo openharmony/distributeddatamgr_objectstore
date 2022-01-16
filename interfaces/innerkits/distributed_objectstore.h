@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "distributed_object.h"
-#include "flat_object_store.h"
 
 namespace OHOS::ObjectStore {
 class DistributedObjectStore {

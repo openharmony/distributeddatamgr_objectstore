@@ -66,7 +66,6 @@ uint32_t DistributedObjectStoreImpl::Sync(DistributedObject *object) // todo may
         return ERR_NULL_OBJECTSTORE;
     }
     return SUCCESS;
-    // return flatObjectStore_->Put(*static_cast<DistributedObjectImpl *>(object)->GetObject());
 }
 
 uint32_t DistributedObjectStoreImpl::DeleteObject(const std::string &sessionId)
@@ -177,5 +176,4 @@ DistributedObjectStore *DistributedObjectStore::GetInstance()
     }
     return instPtr;
 }
-
 } // namespace OHOS::ObjectStore

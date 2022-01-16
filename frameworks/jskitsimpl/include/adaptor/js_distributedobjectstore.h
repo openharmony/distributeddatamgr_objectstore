@@ -34,4 +34,4 @@ private:
         napi_env env, DistributedObjectStore *objectStore, DistributedObject *object);
 };
 } // namespace OHOS::ObjectStore
-#endif //JS_DISTRIBUTEDDATAOBJECTSTORE_H
+#endif // JS_DISTRIBUTEDDATAOBJECTSTORE_H
