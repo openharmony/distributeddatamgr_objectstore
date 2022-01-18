@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,24 +15,24 @@
 
 #ifndef DISTRIBUTED_OBJECTSTORE_H
 #define DISTRIBUTED_OBJECTSTORE_H
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "distributed_object.h"
 
 namespace OHOS::ObjectStore {
 class DistributedObjectStore {
 public:
-    virtual ~DistributedObjectStore() {};
-    virtual DistributedObject *CreateObject(const std::string &classPath, const std::string &key) = 0;
-    virtual uint32_t Get(const std::string &objectId, DistributedObject *object) = 0;
+    virtual ~DistributedObjectStore(){};
+    static DistributedObjectStore *GetInstance();
+    virtual DistributedObject *CreateObject(const std::string &sessionId) = 0;
+    virtual uint32_t Get(const std::string &sessionId, DistributedObject *object) = 0;
     virtual uint32_t Sync(DistributedObject *object) = 0;
-    virtual uint32_t Delete(DistributedObject *object) = 0;
+    virtual uint32_t DeleteObject(const std::string &sessionId) = 0;
     virtual uint32_t Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> objectWatcher) = 0;
     virtual uint32_t UnWatch(DistributedObject *object) = 0;
-    virtual void Close() = 0;
 };
-}
+} // namespace OHOS::ObjectStore
 
 #endif // DISTRIBUTED_OBJECTSTORE_H

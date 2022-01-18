@@ -1,0 +1,97 @@
+# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import("//build/ohos.gni")
+
+group("build_module") {
+  deps = [ ":distributeddataobject" ]
+}
+
+config("objectstore_config") {
+  visibility = [ ":*" ]
+
+  cflags = [
+    "-frtti",
+    "-DHILOG_ENABLE",
+  ]
+
+  include_dirs = [
+    "../../frameworks/jskitsimpl/include/adaptor",
+    "../../frameworks/jskitsimpl/include/common",
+    "../../frameworks/innerkitsimpl/include/adaptor",
+    "../../frameworks/innerkitsimpl/include/common",
+    "../../frameworks/innerkitsimpl/include/communicator",
+    "../../interfaces/innerkits",
+    "//third_party/bounds_checking_function/include",
+  ]
+}
+
+config("objectstore_public_config") {
+  visibility = [ "//foundation/distributeddatamgr/objectstore:*" ]
+
+  include_dirs = [
+    ".",
+    "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb/interfaces/include",
+  ]
+}
+
+base_output_path =
+    get_label_info(":distributed_data_object_js", "target_out_dir")
+distributed_data_object_js_obj_path =
+    base_output_path + "/distributed_data_object.o"
+gen_js_obj("distributed_data_object_js") {
+  input = "distributed_data_object.js"
+  output = distributed_data_object_js_obj_path
+}
+ohos_shared_library("distributeddataobject") {
+  part_name = "distributeddataobject"
+  sources = [
+    "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_impl.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_store_impl.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/flat_object_storage_engine.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/flat_object_store.cpp",
+    "../../frameworks/innerkitsimpl/src/common/uv_queue.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/app_device_handler.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/app_pipe_handler.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/app_pipe_mgr.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/ark_communication_provider.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/communication_provider.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/communication_provider_impl.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/process_communicator_impl.cpp",
+    "../../frameworks/innerkitsimpl/src/communicator/softbus_adapter_standard.cpp",
+    "../../frameworks/jskitsimpl/src/adaptor/js_distributedobject.cpp",
+    "../../frameworks/jskitsimpl/src/adaptor/js_distributedobjectstore.cpp",
+    "../../frameworks/jskitsimpl/src/adaptor/js_module_init.cpp",
+    "../../frameworks/jskitsimpl/src/adaptor/js_object_wrapper.cpp",
+    "../../frameworks/jskitsimpl/src/adaptor/js_watcher.cpp",
+    "../../frameworks/jskitsimpl/src/common/js_util.cpp",
+  ]
+
+  configs = [ ":objectstore_config" ]
+
+  deps = [
+    ":distributed_data_object_js",
+    "//foundation/ace/napi:ace_napi",
+    "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb:distributeddb",
+    "//third_party/libuv:uv_static",
+    "//utils/native/base:utils",
+    "//utils/native/base:utilsecurec",
+  ]
+  external_deps = [
+    "dsoftbus_standard:softbus_client",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
+
+  public_configs = [ ":objectstore_public_config" ]
+  relative_install_dir = "module/data"
+  subsystem_name = "distributeddataobject"
+}
