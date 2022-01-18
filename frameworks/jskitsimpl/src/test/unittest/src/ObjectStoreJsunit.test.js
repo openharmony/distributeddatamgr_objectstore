@@ -15,9 +15,9 @@
 import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from 'deccjsunit/index'
 import distributedObject from '@ohos.data.distributedDataObject';
 
-var g_object = distributedObject.distributed({ name: "Amy", age: 18, isVis: false });
-var test_object = distributedObject.distributed({ name: "Eric", age: 81, isVis: true });
-var undefined_object = distributedObject.distributed({ name: undefined, age: undefined, isVis: undefined });
+var g_object = distributedObject.createDistributedObject({ name: "Amy", age: 18, isVis: false });
+var test_object = distributedObject.createDistributedObject({ name: "Eric", age: 81, isVis: true });
+var undefined_object = distributedObject.createDistributedObject({ name: undefined, age: undefined, isVis: undefined });
 const TAG = "OBJECTSTORE_TEST";
 
 function changeCallback(sessionId, changeData) {
@@ -67,7 +67,7 @@ describe('objectStoreTest', function () {
      */
     it('testOn001', 0, function (done) {
         console.log(TAG + "************* testOn001 start *************");
-        g_object.setSession("session1");
+        g_object.setSessionId("session1");
         if (g_object != undefined && g_object != null) {
             expect("session1").assertEqual(g_object.__sessionId);
         } else {
@@ -103,7 +103,7 @@ describe('objectStoreTest', function () {
      */
     it('testOn002', 0, function (done) {
         console.log(TAG + "************* testOn002 start *************");
-        g_object.setSession("session2");
+        g_object.setSessionId("session2");
         if (g_object != undefined && g_object != null) {
             expect("session2").assertEqual(g_object.__sessionId);
         } else {
@@ -137,7 +137,7 @@ describe('objectStoreTest', function () {
      */
     it('testOn003', 0, function (done) {
         console.log(TAG + "************* testOn003 start *************");
-        g_object.setSession("session3");
+        g_object.setSessionId("session3");
         if (g_object != undefined && g_object != null) {
             expect("session3").assertEqual(g_object.__sessionId);
         } else {
@@ -189,7 +189,7 @@ describe('objectStoreTest', function () {
      */
     it('testOn004', 0, function (done) {
         console.log(TAG + "************* testOn004 start *************");
-        g_object.setSession("session4");
+        g_object.setSessionId("session4");
         if (g_object != undefined && g_object != null) {
             expect("session4").assertEqual(g_object.__sessionId);
         } else {
@@ -210,7 +210,7 @@ describe('objectStoreTest', function () {
      */
     it('testOff001', 0, function (done) {
         console.log(TAG + "************* testOff001 start *************");
-        g_object.setSession("session5");
+        g_object.setSessionId("session5");
         if (g_object != undefined && g_object != null) {
             expect("session5").assertEqual(g_object.__sessionId);
         } else {
@@ -264,7 +264,7 @@ describe('objectStoreTest', function () {
      */
     it('testOff002', 0, function (done) {
         console.log(TAG + "************* testOff002 start *************");
-        g_object.setSession("session6");
+        g_object.setSessionId("session6");
         if (g_object != undefined && g_object != null) {
             expect("session6").assertEqual(g_object.__sessionId);
         } else {
@@ -300,13 +300,13 @@ describe('objectStoreTest', function () {
      */
     it('testMultiObjectOn001', 0, function (done) {
         console.log(TAG + "************* testMultiObjectOn001 start *************");
-        g_object.setSession("session7");
+        g_object.setSessionId("session7");
         if (g_object != undefined && g_object != null) {
             expect("session7").assertEqual(g_object.__sessionId);
         } else {
             console.log(TAG + "testMultiObjectOn001 joinSession failed");
         }
-        test_object.setSession("testSession1");
+        test_object.setSessionId("testSession1");
         if (test_object != undefined && test_object != null) {
             expect("testSession1").assertEqual(test_object.__sessionId);
         } else {
@@ -359,13 +359,13 @@ describe('objectStoreTest', function () {
      */
     it('testMultiObjectOff001', 0, function (done) {
         console.log(TAG + "************* testMultiObjectOff001 start *************");
-        g_object.setSession("session8");
+        g_object.setSessionId("session8");
         if (g_object != undefined && g_object != null) {
             expect("session8").assertEqual(g_object.__sessionId);
         } else {
             console.log(TAG + "testMultiObjectOn002 joinSession failed");
         }
-        test_object.setSession("testSession2");
+        test_object.setSessionId("testSession2");
         if (test_object != undefined && test_object != null) {
             expect("testSession2").assertEqual(test_object.__sessionId);
         } else {
@@ -452,7 +452,7 @@ describe('objectStoreTest', function () {
      */
     it('testChangeSession001', 0, function (done) {
         console.log(TAG + "************* testChangeSession001 start *************");
-        g_object.setSession("session9");
+        g_object.setSessionId("session9");
         if (g_object != undefined && g_object != null) {
             expect("session9").assertEqual(g_object.__sessionId);
         } else {
@@ -476,7 +476,7 @@ describe('objectStoreTest', function () {
         } else {
             console.info(TAG + " object is null,set name fail");
         }
-        g_object.setSession("session10");
+        g_object.setSessionId("session10");
         if (g_object != undefined && g_object != null) {
             expect("session10").assertEqual(g_object.__sessionId);
         } else {
@@ -511,7 +511,7 @@ describe('objectStoreTest', function () {
     it('testUndefinedType001', 0, function (done) {
         console.log(TAG + "************* testUndefinedType001 start *************");
         try{
-            g_object.setSession("session11");
+            g_object.setSessionId("session11");
             if (g_object != undefined && g_object != null) {
                 expect("session11").assertEqual(g_object.__sessionId);
             } else {
