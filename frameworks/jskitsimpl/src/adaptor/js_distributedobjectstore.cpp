@@ -15,15 +15,15 @@
 
 #include "js_distributedobjectstore.h"
 
+#include "ability.h"
 #include "distributed_objectstore.h"
 #include "js_common.h"
 #include "js_distributedobject.h"
 #include "js_object_wrapper.h"
+#include "js_util.h"
 #include "logger.h"
 #include "napi/native_node_api.h"
 #include "objectstore_errors.h"
-#include "js_util.h"
-#include "ability.h"
 
 namespace OHOS::ObjectStore {
 constexpr size_t TYPE_SIZE = 10;
@@ -66,7 +66,8 @@ napi_value JSDistributedObjectStore::JSCreateObjectSync(napi_env env, napi_callb
     CHECK_EQUAL_WITH_RETURN_NULL(valueType, napi_string)
     status = JSUtil::GetValue(env, argv[0], sessionId);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
-    DistributedObjectStore *objectInfo = DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env));
+    DistributedObjectStore *objectInfo =
+        DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env));
     ASSERT_MATCH_ELSE_RETURN_NULL(objectInfo != nullptr);
     napi_value global;
     napi_get_global(env, &global);
@@ -94,7 +95,8 @@ napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_call
     status = napi_unwrap(env, argv[0], (void **)&objectWrapper);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     ASSERT_MATCH_ELSE_RETURN_NULL(objectWrapper != nullptr);
-    DistributedObjectStore *objectInfo = DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env));
+    DistributedObjectStore *objectInfo =
+        DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env));
     ASSERT_MATCH_ELSE_RETURN_NULL(objectInfo != nullptr && objectWrapper->GetObject() != nullptr);
     objectWrapper->DeleteWatch(env, "change");
     uint32_t ret = objectInfo->DeleteObject(objectWrapper->GetObject()->GetSessionId());
@@ -120,7 +122,8 @@ napi_value JSDistributedObjectStore::JSSync(napi_env env, napi_callback_info inf
     status = napi_unwrap(env, argv[0], (void **)&objectWrapper);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     ASSERT_MATCH_ELSE_RETURN_NULL(objectWrapper != nullptr);
-    DistributedObjectStore *objectInfo = DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env));
+    DistributedObjectStore *objectInfo =
+        DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env));
     ASSERT_MATCH_ELSE_RETURN_NULL(objectInfo != nullptr);
     uint32_t ret = objectInfo->Sync(objectWrapper->GetObject());
     napi_value result = nullptr;
