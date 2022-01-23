@@ -30,6 +30,7 @@ public:
     static napi_value JSOff(napi_env env, napi_callback_info info);
 
 private:
+    static std::string GetBundleName(napi_env env);
     static napi_value NewDistributedObject(
         napi_env env, DistributedObjectStore *objectStore, DistributedObject *object);
 };

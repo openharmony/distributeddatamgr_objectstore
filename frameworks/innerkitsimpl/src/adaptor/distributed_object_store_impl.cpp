@@ -160,7 +160,7 @@ DistributedObjectStore *DistributedObjectStore::GetInstance(const std::string &b
 {
     static char instMemory[sizeof(DistributedObjectStoreImpl)];
     static std::mutex instLock_;
-    static DistributedObjectStore * instPtr = nullptr;
+    static DistributedObjectStore *instPtr = nullptr;
     if (instPtr == nullptr) {
         std::lock_guard<std::mutex> lock(instLock_);
         if (instPtr == nullptr) {

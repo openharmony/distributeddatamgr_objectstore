@@ -29,11 +29,6 @@
 #include "softbus_bus_center.h"
 namespace OHOS {
 namespace ObjectStore {
-enum IdType {
-    NETWORKID,
-    UUID,
-    UDID,
-};
 class Semaphore {
 public:
     explicit Semaphore(unsigned int resCount) : count(resCount), data(-1)
@@ -88,7 +83,6 @@ public:
     DeviceInfo GetLocalBasicInfo() const;
     // get all remote connected device's node information;
     std::vector<DeviceInfo> GetRemoteNodesBasicInfo() const;
-    std::string ToNodeID(const std::string &nodeId) const;
     static std::string ToBeAnonymous(const std::string &name);
 
     // add DataChangeListener to watch data change;
@@ -126,6 +120,7 @@ public:
     void SetOpenSessionId(const int &sessionId);
 
 private:
+    std::string ToNodeID(const std::string &nodeId) const;
     mutable std::mutex networkMutex_{};
     mutable std::map<std::string, std::string> networkId2Udid_{};
     DeviceInfo localInfo_{};

@@ -30,13 +30,6 @@ JSWatcher::JSWatcher(const napi_env env, DistributedObjectStore *objectStore, Di
 {
     listeners_[EVENT_CHANGE].type_ = "change";
     listeners_[EVENT_STATUS].type_ = "status";
-    std::shared_ptr<WatcherImpl> watcher = std::make_shared<WatcherImpl>(this, object->GetSessionId());
-    uint32_t ret = objectStore->Watch(object, watcher);
-    if (ret != SUCCESS) {
-        LOG_ERROR("watch %{public}s error", object->GetSessionId().c_str());
-    } else {
-        LOG_INFO("watch %{public}s success", object->GetSessionId().c_str());
-    }
 }
 
 JSWatcher::~JSWatcher()
@@ -55,7 +48,16 @@ void JSWatcher::On(const char *type, napi_value handler)
         return;
     }
     LOG_ERROR("add %{public}p", handler);
-    listeners_[event].Add(env_, handler);
+    bool isEmpty = listeners_[event].Add(env_, handler);
+    if (isEmpty && event == EVENT_CHANGE) {
+        std::shared_ptr<WatcherImpl> watcher = std::make_shared<WatcherImpl>(this, object_->GetSessionId());
+        uint32_t ret = objectStore_->Watch(object_, watcher);
+        if (ret != SUCCESS) {
+            LOG_ERROR("watch %{public}s error", object_->GetSessionId().c_str());
+        } else {
+            LOG_INFO("watch %{public}s success", object_->GetSessionId().c_str());
+        }
+    }
 }
 
 void JSWatcher::Off(const char *type, napi_value handler)
@@ -65,10 +67,20 @@ void JSWatcher::Off(const char *type, napi_value handler)
         return;
     }
     LOG_INFO("start del %{public}s  %{public}p", object_->GetSessionId().c_str(), handler);
+    bool isEmpty = true;
     if (handler == nullptr) {
         listeners_[event].Clear(env_);
     } else {
-        listeners_[event].Del(env_, handler);
+        isEmpty = listeners_[event].Del(env_, handler);
+    }
+    if (isEmpty && event == EVENT_CHANGE) {
+        std::shared_ptr<WatcherImpl> watcher = std::make_shared<WatcherImpl>(this, object_->GetSessionId());
+        uint32_t ret = objectStore_->UnWatch(object_);
+        if (ret != SUCCESS) {
+            LOG_ERROR("unWatch %{public}s error", object_->GetSessionId().c_str());
+        } else {
+            LOG_INFO("unWatch %{public}s success", object_->GetSessionId().c_str());
+        }
     }
     LOG_INFO("end %{public}s", object_->GetSessionId().c_str());
 }
@@ -125,7 +137,7 @@ void EventListener::Clear(napi_env env)
     }
 }
 
-void EventListener::Del(napi_env env, napi_value handler)
+bool EventListener::Del(napi_env env, napi_value handler)
 {
     EventHandler *temp = nullptr;
     for (EventHandler *i = handlers_; i != nullptr; i = handlers_) {
@@ -145,18 +157,21 @@ void EventListener::Del(napi_env env, napi_value handler)
             temp = i;
         }
     }
+    return handlers_ == nullptr;
 }
 
-void EventListener::Add(napi_env env, napi_value handler)
+bool EventListener::Add(napi_env env, napi_value handler)
 {
+    bool isEmpty = false;
     if (Find(env, handler) != nullptr) {
         LOG_ERROR("has added,return");
-        return;
+        return isEmpty;
     }
 
     if (handlers_ == nullptr) {
         handlers_ = new EventHandler();
         handlers_->next = nullptr;
+        isEmpty = true;
     } else {
         auto temp = new EventHandler();
         temp->next = handlers_;
@@ -164,6 +179,7 @@ void EventListener::Add(napi_env env, napi_value handler)
     }
     napi_create_reference(env, handler, 1, &handlers_->callbackRef);
     LOG_INFO("add %{public}p in  %{public}p", handler, handlers_->callbackRef);
+    return isEmpty;
 }
 
 void WatcherImpl::OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData)

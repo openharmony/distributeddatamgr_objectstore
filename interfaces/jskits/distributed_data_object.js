@@ -113,7 +113,7 @@ function leaveSession(obj) {
         return;
     }
     // disconnect,delete object
-    distributedObject.destroyObjectSync(obj[SESSION_ID]);
+    distributedObject.destroyObjectSync(obj);
     Object.keys(obj).forEach(key => {
         Object.defineProperty(obj, key, {
             value: obj[key],

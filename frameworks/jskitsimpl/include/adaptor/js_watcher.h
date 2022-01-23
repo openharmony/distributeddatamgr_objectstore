@@ -39,8 +39,8 @@ public:
     virtual ~EventListener()
     {
     }
-    void Add(napi_env env, napi_value handler);
-    void Del(napi_env env, napi_value handler);
+    bool Add(napi_env env, napi_value handler);
+    bool Del(napi_env env, napi_value handler);
     void Clear(napi_env env);
     const char *type_;
     EventHandler *handlers_;

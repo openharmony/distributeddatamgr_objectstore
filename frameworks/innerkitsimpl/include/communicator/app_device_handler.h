@@ -38,13 +38,8 @@ public:
     DeviceInfo GetLocalBasicInfo() const;
     // get all remote connected device's node information;
     std::vector<DeviceInfo> GetRemoteNodesBasicInfo() const;
-    // transfer uuid or udid to nodeId
-    // input: id
-    // output: nodeId
-    // return: transfer success or not
-    std::string ToNodeID(const std::string &id, const std::string &nodeId) const;
 
-  private:
+private:
     std::shared_ptr<SoftBusAdapter> softbusAdapter_{};
 };
 } // namespace ObjectStore

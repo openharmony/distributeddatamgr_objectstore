@@ -99,15 +99,6 @@ std::vector<DeviceInfo> CommunicationProviderImpl::GetRemoteNodesBasicInfo() con
     return appDeviceHandler_.GetRemoteNodesBasicInfo();
 }
 
-std::string CommunicationProviderImpl::ToNodeId(const std::string &id) const
-{
-    std::string ret = appDeviceHandler_.ToNodeID(id, "");
-    if (ret.empty()) {
-        LOG_DEBUG("toNodeId failed.");
-    }
-    return ret;
-}
-
 std::string CommunicationProviderImpl::GetUdidByNodeId(const std::string &nodeId) const
 {
     return appDeviceHandler_.GetUdidByNodeId(nodeId);

@@ -347,20 +347,19 @@ std::vector<DeviceInfo> SoftBusAdapter::GetRemoteNodesBasicInfo() const
 
 void SoftBusAdapter::UpdateRelationship(const std::string &networkid, const DeviceChangeType &type)
 {
-    auto uuid = GetUuidByNodeId(networkid);
     auto udid = GetUdidByNodeId(networkid);
     lock_guard<mutex> lock(networkMutex_);
     switch (type) {
         case DeviceChangeType::DEVICE_OFFLINE: {
-            auto size = this->networkId2UuidUdid_.erase(networkid);
+            auto size = this->networkId2Udid_.erase(networkid);
             if (size == 0) {
                 LOG_WARN("not found id:%{public}s.", networkid.c_str());
             }
             break;
         }
         case DeviceChangeType::DEVICE_ONLINE: {
-            std::pair<std::string, std::tuple<std::string, std::string>> value = { networkid, { uuid, udid } };
-            auto res = this->networkId2UuidUdid_.insert(std::move(value));
+            std::pair<std::string, std::string> value = { networkid, udid };
+            auto res = this->networkId2Udid_.insert(std::move(value));
             if (!res.second) {
                 LOG_WARN("insert failed.");
             }

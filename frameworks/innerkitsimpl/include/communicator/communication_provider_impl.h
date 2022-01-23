@@ -62,7 +62,6 @@ public:
     std::string GetUdidByNodeId(const std::string &nodeId) const override;
     DeviceInfo GetLocalBasicInfo() const override;
     std::vector<DeviceInfo> GetRemoteNodesBasicInfo() const override;
-    std::string ToNodeId(const std::string &id) const override;
     void SetMessageTransFlag(const struct PipeInfo &pipeInfo, bool flag) override;
 
 protected:

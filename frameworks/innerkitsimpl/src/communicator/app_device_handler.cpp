@@ -69,11 +69,5 @@ std::string AppDeviceHandler::GetUdidByNodeId(const std::string &nodeId) const
 {
     return softbusAdapter_->GetUdidByNodeId(nodeId);
 }
-
-std::string AppDeviceHandler::ToNodeID(const std::string &id, const std::string &nodeId) const
-{
-    return softbusAdapter_->ToNodeID(nodeId);
-}
-
 } // namespace ObjectStore
 } // namespace OHOS
