@@ -31,14 +31,13 @@ FlatObjectStorageEngine::~FlatObjectStorageEngine()
     LOG_INFO("FlatObjectStorageEngine::~FlatObjectStorageEngine Crash! end");
 }
 
-uint32_t FlatObjectStorageEngine::Open()
+uint32_t FlatObjectStorageEngine::Open(const std::string &bundleName)
 {
     if (isOpened_) {
         LOG_INFO("FlatObjectDatabase: No need to reopen it");
         return SUCCESS;
     }
-    // todo bundlename
-    auto status = DistributedDB::KvStoreDelegateManager::SetProcessLabel("objectstoreDB", "default");
+    auto status = DistributedDB::KvStoreDelegateManager::SetProcessLabel("objectstoreDB", bundleName);
     if (status != DistributedDB::DBStatus::OK) {
         LOG_ERROR("delegate SetProcessLabel failed: %{public}d.", static_cast<int>(status));
         return SUCCESS;
@@ -50,8 +49,7 @@ uint32_t FlatObjectStorageEngine::Open()
         LOG_ERROR("set distributed db communicator failed.");
         return SUCCESS;
     }
-    // todo bundlename
-    storeManager_ = std::make_shared<DistributedDB::KvStoreDelegateManager>("objectstore", "default");
+    storeManager_ = std::make_shared<DistributedDB::KvStoreDelegateManager>(bundleName, "default");
     if (storeManager_ == nullptr) {
         LOG_ERROR("FlatObjectStorageEngine::make shared fail");
         return ERR_MOMEM;
@@ -262,7 +260,7 @@ uint32_t FlatObjectStorageEngine::RegisterObserver(const std::string &key, std::
     std::vector<uint8_t> tmpKey;
     LOG_INFO("start RegisterObserver %{public}s", key.c_str());
     DistributedDB::DBStatus status =
-        delegate->RegisterObserver(tmpKey, DistributedDB::ObserverMode::OBSERVER_CHANGES_NATIVE, watcher.get());
+        delegate->RegisterObserver(tmpKey, DistributedDB::ObserverMode::OBSERVER_CHANGES_FOREIGN, watcher.get());
     if (status != DistributedDB::DBStatus::OK) {
         LOG_ERROR("FlatObjectStorageEngine::RegisterObserver watch err %{public}d", status);
         return ERR_REGISTER;

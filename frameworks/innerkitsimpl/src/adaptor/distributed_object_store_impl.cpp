@@ -156,15 +156,16 @@ void WatcherProxy::OnDeleted(const std::string &sessionid)
     objectWatcher_->OnDeleted(sessionid);
 }
 
-DistributedObjectStore *DistributedObjectStore::GetInstance()
+DistributedObjectStore *DistributedObjectStore::GetInstance(const std::string &bundleName)
 {
     static char instMemory[sizeof(DistributedObjectStoreImpl)];
     static std::mutex instLock_;
-    static std::atomic<DistributedObjectStore *> instPtr = nullptr;
+    static DistributedObjectStore *instPtr = nullptr;
     if (instPtr == nullptr) {
         std::lock_guard<std::mutex> lock(instLock_);
         if (instPtr == nullptr) {
-            FlatObjectStore *flatObjectStore = new (std::nothrow) FlatObjectStore();
+            LOG_INFO("new objectstore %{public}s", bundleName.c_str());
+            FlatObjectStore *flatObjectStore = new (std::nothrow) FlatObjectStore(bundleName);
             if (flatObjectStore == nullptr) {
                 LOG_ERROR("no memory for FlatObjectStore malloc!");
                 return nullptr;

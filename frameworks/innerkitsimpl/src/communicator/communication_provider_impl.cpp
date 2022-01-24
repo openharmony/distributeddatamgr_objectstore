@@ -89,11 +89,6 @@ bool CommunicationProviderImpl::IsSameStartedOnPeer(const PipeInfo &pipeInfo, co
     return appPipeMgr_.IsSameStartedOnPeer(pipeInfo, peer);
 }
 
-std::string CommunicationProviderImpl::GetUuidByNodeId(const std::string &nodeId) const
-{
-    return appDeviceHandler_.GetUuidByNodeId(nodeId);
-}
-
 DeviceInfo CommunicationProviderImpl::GetLocalBasicInfo() const
 {
     return appDeviceHandler_.GetLocalBasicInfo();
@@ -102,15 +97,6 @@ DeviceInfo CommunicationProviderImpl::GetLocalBasicInfo() const
 std::vector<DeviceInfo> CommunicationProviderImpl::GetRemoteNodesBasicInfo() const
 {
     return appDeviceHandler_.GetRemoteNodesBasicInfo();
-}
-
-std::string CommunicationProviderImpl::ToNodeId(const std::string &id) const
-{
-    std::string ret = appDeviceHandler_.ToNodeID(id, "");
-    if (ret.empty()) {
-        LOG_DEBUG("toNodeId failed.");
-    }
-    return ret;
 }
 
 std::string CommunicationProviderImpl::GetUdidByNodeId(const std::string &nodeId) const

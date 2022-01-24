@@ -34,7 +34,7 @@ public:
 
 class FlatObjectStore {
 public:
-    explicit FlatObjectStore();
+    explicit FlatObjectStore(const std::string &bundleName);
     ~FlatObjectStore();
     uint32_t CreateObject(const std::string &sessionId);
     uint32_t Delete(const std::string &objectId);

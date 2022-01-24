@@ -29,7 +29,7 @@ class FlatObjectStorageEngine : public ObjectStorageEngine {
 public:
     FlatObjectStorageEngine() = default;
     ~FlatObjectStorageEngine() override;
-    uint32_t Open() override;
+    uint32_t Open(const std::string &bundleName) override;
     uint32_t Close() override;
     uint32_t DeleteTable(const std::string &key) override;
     uint32_t CreateTable(const std::string &key) override;

@@ -45,7 +45,7 @@ public:
     ObjectStorageEngine &operator=(ObjectStorageEngine &&) = delete;
     ObjectStorageEngine() = default;
     virtual ~ObjectStorageEngine() = default;
-    virtual uint32_t Open() = 0;
+    virtual uint32_t Open(const std::string &bundleName) = 0;
     virtual uint32_t Close() = 0;
     virtual uint32_t DeleteTable(const std::string &key) = 0;
     virtual uint32_t CreateTable(const std::string &key) = 0;

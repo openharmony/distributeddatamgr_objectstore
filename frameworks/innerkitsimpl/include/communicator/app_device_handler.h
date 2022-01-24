@@ -33,27 +33,13 @@ public:
     DeviceInfo GetLocalDevice();
     std::vector<DeviceInfo> GetDeviceList() const;
 
-    std::string GetUuidByNodeId(const std::string &nodeId) const;
     std::string GetUdidByNodeId(const std::string &nodeId) const;
     // get local device node information;
     DeviceInfo GetLocalBasicInfo() const;
     // get all remote connected device's node information;
     std::vector<DeviceInfo> GetRemoteNodesBasicInfo() const;
-    // transfer nodeId or udid to uuid
-    // input: id
-    // output: uuid
-    // return: transfer success or not
-    std::string ToUUID(const std::string &id) const;
-    // transfer uuid or udid to nodeId
-    // input: id
-    // output: nodeId
-    // return: transfer success or not
-    std::string ToNodeID(const std::string &id, const std::string &nodeId) const;
-
-    static std::string ToBeAnonymous(const std::string &name);
 
 private:
-    void UpdateRelationship(const std::string &networkid, const DeviceChangeType &type);
     std::shared_ptr<SoftBusAdapter> softbusAdapter_{};
 };
 } // namespace ObjectStore

@@ -50,7 +50,19 @@
             "sub_component": [
                 "//foundation/distributeddatamgr/objectstore/interfaces/jskits:build_module"
             ],
-            "inner_kits": [],
+            "inner_kits": [
+                {
+                    "name": "//foundation/distributeddatamgr/objectstore/interfaces/innerkits:distributeddataobject_impl",
+                    "header": {
+                        "header_files": [
+                            "distributed_object.h",
+                            "distributed_objectstore.h",
+                            "objectstore_errors.h"
+                        ],
+                        "header_base": "//foundation/distributeddatamgr/objectstore/interfaces/innerkits"
+                    }
+                }
+            ],
             "test": []
         }
     }

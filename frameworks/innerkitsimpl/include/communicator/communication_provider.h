@@ -73,11 +73,9 @@ public:
     // check peer device pipeInfo Process
     KVSTORE_API virtual bool IsSameStartedOnPeer(const PipeInfo &pipeInfo, const DeviceId &peer) const = 0;
 
-    KVSTORE_API virtual std::string GetUuidByNodeId(const std::string &nodeId) const = 0;
     KVSTORE_API virtual std::string GetUdidByNodeId(const std::string &nodeId) const = 0;
     KVSTORE_API virtual DeviceInfo GetLocalBasicInfo() const = 0;
     KVSTORE_API virtual std::vector<DeviceInfo> GetRemoteNodesBasicInfo() const = 0;
-    KVSTORE_API virtual std::string ToNodeId(const std::string &id) const = 0;
 
     KVSTORE_API virtual void SetMessageTransFlag(const PipeInfo &pipeInfo, bool flag) = 0;
 };

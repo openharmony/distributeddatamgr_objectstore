@@ -19,10 +19,10 @@
 #include "objectstore_errors.h"
 
 namespace OHOS::ObjectStore {
-FlatObjectStore::FlatObjectStore()
+FlatObjectStore::FlatObjectStore(const std::string &bundleName)
 {
     storageEngine_ = std::make_shared<FlatObjectStorageEngine>();
-    uint32_t status = storageEngine_->Open();
+    uint32_t status = storageEngine_->Open(bundleName);
     if (status != SUCCESS) {
         LOG_ERROR("FlatObjectStore: Failed to open, error: open storage engine failure %{public}d", status);
     }

@@ -29,11 +29,6 @@
 #include "softbus_bus_center.h"
 namespace OHOS {
 namespace ObjectStore {
-enum IdType {
-    NETWORKID,
-    UUID,
-    UDID,
-};
 class Semaphore {
 public:
     explicit Semaphore(unsigned int resCount) : count(resCount), data(-1)
@@ -83,22 +78,11 @@ public:
     void NotifyAll(const DeviceInfo &deviceInfo, const DeviceChangeType &type);
     DeviceInfo GetLocalDevice();
     std::vector<DeviceInfo> GetDeviceList() const;
-    std::string GetUuidByNodeId(const std::string &nodeId) const;
     std::string GetUdidByNodeId(const std::string &nodeId) const;
     // get local device node information;
     DeviceInfo GetLocalBasicInfo() const;
     // get all remote connected device's node information;
     std::vector<DeviceInfo> GetRemoteNodesBasicInfo() const;
-    // transfer nodeId or udid to uuid
-    // input: id
-    // output: uuid
-    // return: transfer success or not
-    std::string ToUUID(const std::string &id) const;
-    // transfer uuid or udid to nodeId
-    // input: id
-    // output: nodeId
-    // return: transfer success or not
-    std::string ToNodeID(const std::string &id, const std::string &nodeId) const;
     static std::string ToBeAnonymous(const std::string &name);
 
     // add DataChangeListener to watch data change;
@@ -136,8 +120,9 @@ public:
     void SetOpenSessionId(const int &sessionId);
 
 private:
+    std::string ToNodeID(const std::string &nodeId) const;
     mutable std::mutex networkMutex_{};
-    mutable std::map<std::string, std::tuple<std::string, std::string>> networkId2UuidUdid_{};
+    mutable std::map<std::string, std::string> networkId2Udid_{};
     DeviceInfo localInfo_{};
     static std::shared_ptr<SoftBusAdapter> instance_;
     std::mutex deviceChangeMutex_;

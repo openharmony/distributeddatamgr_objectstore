@@ -59,11 +59,9 @@ public:
     Status Stop(const PipeInfo &pipeInfo) override;
 
     bool IsSameStartedOnPeer(const PipeInfo &pipeInfo, const DeviceId &peer) const override;
-    std::string GetUuidByNodeId(const std::string &nodeId) const override;
     std::string GetUdidByNodeId(const std::string &nodeId) const override;
     DeviceInfo GetLocalBasicInfo() const override;
     std::vector<DeviceInfo> GetRemoteNodesBasicInfo() const override;
-    std::string ToNodeId(const std::string &id) const override;
     void SetMessageTransFlag(const struct PipeInfo &pipeInfo, bool flag) override;
 
 protected:
