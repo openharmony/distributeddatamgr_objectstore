@@ -199,7 +199,7 @@ DistributedObjectStore *DistributedObjectStore::GetInstance(const std::string &b
     static DistributedObjectStore *instPtr = nullptr;
     if (instPtr == nullptr) {
         std::lock_guard<std::mutex> lock(instLock_);
-        if (instPtr == nullptr) {
+        if (instPtr == nullptr && !bundleName.empty()) {
             LOG_INFO("new objectstore %{public}s", bundleName.c_str());
             FlatObjectStore *flatObjectStore = new (std::nothrow) FlatObjectStore(bundleName);
             if (flatObjectStore == nullptr) {
