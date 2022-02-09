@@ -41,7 +41,7 @@ public:
     void TriggerRestore(std::function<void()> notifier) override;
 
 private:
-    void UpdateStatus(SyncStatus status);
+    void UpdateStatus(const std::string &status);
     DistributedObjectImpl *CacheObject(const std::string &sessionId, FlatObjectStore *flatObjectStore);
     FlatObjectStore *flatObjectStore_ = nullptr;
     std::map<DistributedObject *, std::shared_ptr<WatcherProxy>> watchers_;

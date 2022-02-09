@@ -134,7 +134,7 @@ uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
 
 void DistributedObjectStoreImpl::TriggerSync()
 {
-    UpdateStatus(START);
+    UpdateStatus(TO_STRING(START));
 }
 
 void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
@@ -167,18 +167,17 @@ void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
         }
         LOG_WARN("restore result %{public}d", status);
         notifier();
-        UpdateStatus(FINISHED);
+        UpdateStatus(TO_STRING(FINISHED));
     });
     th.detach();
     return;
 }
-void DistributedObjectStoreImpl::UpdateStatus(SyncStatus status)
+void DistributedObjectStoreImpl::UpdateStatus(const std::string &status)
 {
     std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
-    std::string statusUpdated = TO_STRING(status);
-    LOG_INFO("update status to %{public}s", statusUpdated.c_str());
+    LOG_INFO("update status to %{public}s", status.c_str());
     for (auto item : objects_) {
-        item->PutString(PROPERTY_STATUS_NAME, statusUpdated);
+        item->PutString(PROPERTY_STATUS_NAME, status);
     }
     return;
 }
