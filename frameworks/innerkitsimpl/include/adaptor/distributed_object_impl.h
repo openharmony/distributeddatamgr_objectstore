@@ -31,6 +31,8 @@ public:
     uint32_t GetDouble(const std::string &key, double &value) override;
     uint32_t GetBoolean(const std::string &key, bool &value) override;
     uint32_t GetString(const std::string &key, std::string &value) override;
+    uint32_t PutComplex(const std::string &key, const std::vector<uint8_t> &value) override;
+    uint32_t GetComplex(const std::string &key, std::vector<uint8_t> &value) override;
     std::string &GetSessionId() override;
     uint32_t GetType(const std::string &key, Type &type) override;
 

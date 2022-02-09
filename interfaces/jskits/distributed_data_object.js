@@ -1,5 +1,7 @@
 const distributedObject = requireInternal("data.distributedDataObject");
 const SESSION_ID = "__sessionId";
+const COMPLEX_TYPE = "[COMPLEX]";
+const STRING_TYPE = "[STRING]";
 
 class Distributed {
     constructor(obj) {
@@ -54,6 +56,7 @@ class Distributed {
     off(type, callback) {
         offWatch(type, this.__proxy, callback);
     };
+
     __proxy;
 }
 
@@ -89,12 +92,35 @@ function joinSession(obj, sessionId) {
             enumerable: true,
             configurable: true,
             get: function () {
-                return object.get(key);
+                console.info("start get " + key);
+                let result = object.get(key);
+                console.info("get " + result);
+                if (typeof result == "string") {
+                    if (result.startsWith(STRING_TYPE)) {
+                        result = result.substr(STRING_TYPE.length);
+                    } else if (result.startsWith(COMPLEX_TYPE)) {
+                        result = JSON.parse(result.substr(COMPLEX_TYPE.length))
+                    } else {
+                        console.error("error type " + result);
+                    }
+                }
+                console.info("get " + result + " success");
+                return result;
             },
             set: function (newValue) {
                 console.info("start set " + key + " " + newValue);
-                object.put(key, newValue);
-                console.info("end set " + key + " " + newValue);
+                if (typeof newValue == "object") {
+                    let value = COMPLEX_TYPE + JSON.stringify(newValue);
+                    object.put(key, value);
+                    console.info("set " + key + " " + value);
+                } else if (typeof newValue == "string") {
+                    let value = STRING_TYPE + newValue;
+                    object.put(key, value);
+                    console.info("set " + key + " " + value);
+                } else {
+                    object.put(key, newValue);
+                    console.info("set " + key + " " + newValue);
+                }
             }
         });
         if (obj[key] != undefined) {
