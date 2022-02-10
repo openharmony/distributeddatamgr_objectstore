@@ -116,6 +116,7 @@ ohos_shared_library("distributeddataobject") {
     "//utils/native/base:utilsecurec",
   ]
   external_deps = [
+    "ability_base:want",
     "ability_runtime:ability_manager",
     "ability_runtime:runtime",
     "dsoftbus_standard:softbus_client",
