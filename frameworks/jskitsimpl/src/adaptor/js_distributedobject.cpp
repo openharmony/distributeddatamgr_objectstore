@@ -141,6 +141,13 @@ void JSDistributedObject::DoPut(
             wrapper->GetObject()->PutString(keyString, putValue);
             break;
         }
+        case napi_object: {
+            std::vector<uint8_t> putValue;
+            napi_status status = JSUtil::GetValue(env, value, putValue);
+            CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
+            wrapper->GetObject()->PutComplex(keyString, putValue);
+            break;
+        }
         default: {
             LOG_ERROR("error type! %{public}d", type);
             break;
@@ -176,6 +183,14 @@ void JSDistributedObject::DoGet(napi_env env, JSObjectWrapper *wrapper, char *ke
             bool result;
             uint32_t ret = wrapper->GetObject()->GetBoolean(keyString, result);
             LOG_DEBUG("%{public}d", result);
+            ASSERT_MATCH_ELSE_RETURN_VOID(ret == SUCCESS)
+            napi_status status = JSUtil::SetValue(env, result, value);
+            ASSERT_MATCH_ELSE_RETURN_VOID(status == napi_ok)
+            break;
+        }
+        case TYPE_COMPLEX: {
+            std::vector<uint8_t> result;
+            uint32_t ret = wrapper->GetObject()->GetComplex(keyString, result);
             ASSERT_MATCH_ELSE_RETURN_VOID(ret == SUCCESS)
             napi_status status = JSUtil::SetValue(env, result, value);
             ASSERT_MATCH_ELSE_RETURN_VOID(status == napi_ok)

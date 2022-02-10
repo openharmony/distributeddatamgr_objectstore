@@ -117,4 +117,42 @@ napi_status JSUtil::SetValue(napi_env env, const std::vector<std::string> &in, n
     }
     return status;
 }
+
+/* napi_value <-> std::vector<uint8_t> */
+napi_status JSUtil::GetValue(napi_env env, napi_value in, std::vector<uint8_t> &out)
+{
+    out.clear();
+    LOG_DEBUG("napi_value -> std::vector<uint8_t> ");
+    napi_typedarray_type type = napi_biguint64_array;
+    size_t length = 0;
+    napi_value buffer = nullptr;
+    size_t offset = 0;
+    void *data = nullptr;
+    napi_status status = napi_get_typedarray_info(env, in, &type, &length, &data, &buffer, &offset);
+    LOG_DEBUG("array type=%{public}d length=%{public}d offset=%{public}d  status=%{public}d", (int)type, (int)length,
+        (int)offset, status);
+    LOG_ERROR_RETURN(status == napi_ok, "napi_get_typedarray_info failed!", napi_invalid_arg);
+    LOG_ERROR_RETURN(type == napi_uint8_array, "is not Uint8Array!", napi_invalid_arg);
+    LOG_ERROR_RETURN((length > 0) && (data != nullptr), "invalid data!", napi_invalid_arg);
+    out.assign((uint8_t *)data, ((uint8_t *)data) + length);
+    return status;
+}
+
+napi_status JSUtil::SetValue(napi_env env, const std::vector<uint8_t> &in, napi_value &out)
+{
+    LOG_DEBUG("napi_value <- std::vector<uint8_t> ");
+    LOG_ERROR_RETURN(in.size() > 0, "invalid std::vector<uint8_t>", napi_invalid_arg);
+    void *data = nullptr;
+    napi_value buffer = nullptr;
+    napi_status status = napi_create_arraybuffer(env, in.size(), &data, &buffer);
+    LOG_ERROR_RETURN((status == napi_ok), "create array buffer failed!", status);
+
+    if (memcpy_s(data, in.size(), in.data(), in.size()) != EOK) {
+        LOG_ERROR("memcpy_s not EOK");
+        return napi_invalid_arg;
+    }
+    status = napi_create_typedarray(env, napi_uint8_array, in.size(), buffer, 0, &out);
+    LOG_ERROR_RETURN((status == napi_ok), "napi_value <- std::vector<uint8_t> invalid value", status);
+    return status;
+}
 } // namespace OHOS::ObjectStore

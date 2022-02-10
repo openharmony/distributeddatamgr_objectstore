@@ -139,7 +139,7 @@ void DistributedObjectStoreImpl::TriggerSync()
 
 void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
 {
-    std::thread th = std::thread([&]() {
+    std::thread th = std::thread([=]() {
         constexpr uint32_t RETRY_TIMES = 50;
         uint32_t i = 0;
         uint32_t status = ERR_DB_NOT_INIT;
@@ -150,7 +150,7 @@ void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
                 std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
                 for (auto item : objects_) {
                     status = item->GetString(PROPERTY_STATUS_NAME, syncStatus);
-                    if (status != SUCCESS || syncStatus != TO_STRING(START)) {
+                    if (status != SUCCESS) {
                         LOG_WARN("%{public}s not ready", item->GetSessionId().c_str());
                         isFinished = false;
                         break;
@@ -167,6 +167,7 @@ void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
         }
         LOG_WARN("restore result %{public}d", status);
         notifier();
+        LOG_WARN("notify end");
         UpdateStatus(TO_STRING(FINISHED));
     });
     th.detach();

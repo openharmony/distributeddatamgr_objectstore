@@ -69,8 +69,6 @@ napi_value JSDistributedObjectStore::JSCreateObjectSync(napi_env env, napi_callb
     DistributedObjectStore *objectInfo =
         DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env));
     ASSERT_MATCH_ELSE_RETURN_NULL(objectInfo != nullptr);
-    napi_value global;
-    napi_get_global(env, &global);
     DistributedObject *object = objectInfo->CreateObject(sessionId);
     ASSERT_MATCH_ELSE_RETURN_NULL(object != nullptr);
     return NewDistributedObject(env, objectInfo, object);

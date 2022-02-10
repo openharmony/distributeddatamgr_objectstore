@@ -162,4 +162,25 @@ DistributedObjectImpl::DistributedObjectImpl(const std::string &sessionId, FlatO
     : sessionId_(sessionId), flatObjectStore_(flatObjectStore)
 {
 }
+uint32_t DistributedObjectImpl::PutComplex(const std::string &key, const std::vector<uint8_t> &value)
+{
+    Bytes data;
+    Type type = Type::TYPE_COMPLEX;
+    PutNum(&type, 0, sizeof(type), data);
+    data.insert(data.end(), value.begin(), value.end());
+    uint32_t status = flatObjectStore_->Put(sessionId_, FIELDS_PREFIX + key, data);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl::PutBoolean setField err %{public}d", status);
+    }
+    return status;
+}
+uint32_t DistributedObjectImpl::GetComplex(const std::string &key, std::vector<uint8_t> &value)
+{
+    uint32_t status = flatObjectStore_->Get(sessionId_, FIELDS_PREFIX + key, value);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:GetString field not exist. %{public}d %{public}s", status, key.c_str());
+        return status;
+    }
+    return status;
+}
 } // namespace OHOS::ObjectStore

@@ -25,6 +25,7 @@ enum Type : uint8_t {
     TYPE_STRING = 0,
     TYPE_BOOLEAN,
     TYPE_DOUBLE,
+    TYPE_COMPLEX,
 };
 class DistributedObject {
 public:
@@ -32,9 +33,11 @@ public:
     virtual uint32_t PutDouble(const std::string &key, double value) = 0;
     virtual uint32_t PutBoolean(const std::string &key, bool value) = 0;
     virtual uint32_t PutString(const std::string &key, const std::string &value) = 0;
+    virtual uint32_t PutComplex(const std::string &key, const std::vector<uint8_t> &value) = 0;
     virtual uint32_t GetDouble(const std::string &key, double &value) = 0;
     virtual uint32_t GetBoolean(const std::string &key, bool &value) = 0;
     virtual uint32_t GetString(const std::string &key, std::string &value) = 0;
+    virtual uint32_t GetComplex(const std::string &key, std::vector<uint8_t> &value) = 0;
     virtual uint32_t GetType(const std::string &key, Type &type) = 0;
     virtual std::string &GetSessionId() = 0;
 };
