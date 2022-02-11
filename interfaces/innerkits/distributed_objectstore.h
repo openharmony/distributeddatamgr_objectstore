@@ -24,7 +24,8 @@
 namespace OHOS::ObjectStore {
 class StatusNotifier {
 public:
-    virtual void OnChanged(const std::string &sessionId, const std::string &networkId, const std::string &onlineStatus) = 0;
+    virtual void OnChanged(
+        const std::string &sessionId, const std::string &networkId, const std::string &onlineStatus) = 0;
 };
 class DistributedObjectStore {
 public:

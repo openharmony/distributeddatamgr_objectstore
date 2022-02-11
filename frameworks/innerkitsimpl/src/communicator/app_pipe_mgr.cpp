@@ -144,6 +144,5 @@ bool AppPipeMgr::IsSameStartedOnPeer(const struct PipeInfo &pipeInfo, const stru
     }
     return appPipeHandler->IsSameStartedOnPeer(pipeInfo, peer);
 }
-
 } // namespace ObjectStore
 } // namespace OHOS

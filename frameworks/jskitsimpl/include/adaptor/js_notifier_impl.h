@@ -34,4 +34,4 @@ private:
     std::map<std::string, JSWatcher *> watchers_;
 };
 } // namespace OHOS::ObjectStore
-#endif //HANLU_JS_NOTIFIER_IMPL_H
+#endif // JS_NOTIFIER_IMPL_H

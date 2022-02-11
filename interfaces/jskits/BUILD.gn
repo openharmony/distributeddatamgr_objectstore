@@ -96,9 +96,9 @@ ohos_shared_library("distributeddataobject") {
     "../../frameworks/jskitsimpl/src/adaptor/js_distributedobject.cpp",
     "../../frameworks/jskitsimpl/src/adaptor/js_distributedobjectstore.cpp",
     "../../frameworks/jskitsimpl/src/adaptor/js_module_init.cpp",
+    "../../frameworks/jskitsimpl/src/adaptor/js_notifier_impl.cpp",
     "../../frameworks/jskitsimpl/src/adaptor/js_object_wrapper.cpp",
     "../../frameworks/jskitsimpl/src/adaptor/js_watcher.cpp",
-    "../../frameworks/jskitsimpl/src/adaptor/js_notifier_impl.cpp",
     "../../frameworks/jskitsimpl/src/common/js_util.cpp",
     "../../frameworks/jskitsimpl/src/common/uv_queue.cpp",
   ]
