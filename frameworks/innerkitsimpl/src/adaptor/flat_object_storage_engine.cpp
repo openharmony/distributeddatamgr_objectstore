@@ -276,12 +276,12 @@ uint32_t FlatObjectStorageEngine::SetStatusNotifier(std::shared_ptr<StatusWatche
         LOG_ERROR("FlatObjectStorageEngine::SetStatusNotifier kvStore has not init");
         return ERR_DB_NOT_INIT;
     }
-    auto databaseStatusNotifyCallback = [watcher](std::string userId, std::string appId, std::string storeId,
+    /* auto databaseStatusNotifyCallback = [watcher](std::string userId, std::string appId, std::string storeId,
                                             const std::string deviceId, bool onlineStatus) -> void {
         watcher->OnChanged(
             storeId, SoftBusAdapter::GetInstance()->ToNodeID(deviceId), onlineStatus ? "online" : "offline");
     };
-    storeManager_->SetStoreStatusNotifier(databaseStatusNotifyCallback);
+    storeManager_->SetStoreStatusNotifier(databaseStatusNotifyCallback); */
     return SUCCESS;
 }
 
