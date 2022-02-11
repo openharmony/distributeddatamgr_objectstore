@@ -21,6 +21,7 @@
 #include <shared_mutex>
 
 #include "distributed_objectstore.h"
+#include "distributed_object_impl.h"
 
 namespace OHOS::ObjectStore {
 class WatcherProxy;
@@ -37,6 +38,7 @@ public:
     uint32_t DeleteObject(const std::string &sessionId) override;
     uint32_t Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> watcher) override;
     uint32_t UnWatch(DistributedObject *object) override;
+    uint32_t SetStatusNotifier(std::shared_ptr<StatusNotifier> notifier) override;
     void TriggerSync() override;
     void TriggerRestore(std::function<void()> notifier) override;
 
@@ -48,7 +50,16 @@ private:
     std::shared_mutex dataMutex_{};
     std::vector<DistributedObjectImpl *> objects_{};
 };
+class StatusNotifierProxy : public StatusWatcher {
+public:
+    virtual ~StatusNotifierProxy();
+    StatusNotifierProxy(const std::shared_ptr<StatusNotifier> &notifier);
+    void OnChanged(
+        const std::string &sessionId, const std::string &networkId, const std::string &onlineStatus) override;
 
+private:
+    std::shared_ptr<StatusNotifier> notifier;
+};
 class WatcherProxy : public FlatObjectWatcher {
 public:
     WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher, const std::string &sessionId);

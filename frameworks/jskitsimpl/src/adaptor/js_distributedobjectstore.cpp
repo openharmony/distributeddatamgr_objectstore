@@ -97,6 +97,7 @@ napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_call
         DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env));
     ASSERT_MATCH_ELSE_RETURN_NULL(objectInfo != nullptr && objectWrapper->GetObject() != nullptr);
     objectWrapper->DeleteWatch(env, "change");
+    objectWrapper->DeleteWatch(env, "status");
     uint32_t ret = objectInfo->DeleteObject(objectWrapper->GetObject()->GetSessionId());
     napi_value result = nullptr;
     napi_create_int32(env, ret, &result);
@@ -196,6 +197,10 @@ napi_value JSDistributedObjectStore::JSOff(napi_env env, napi_callback_info info
 
 std::string JSDistributedObjectStore::GetBundleName(napi_env env)
 {
-    return AbilityRuntime::Context::GetApplicationContext()->GetBundleName();
+    static std::string bundleName;
+    if (bundleName.empty()) {
+        bundleName = AbilityRuntime::Context::GetApplicationContext()->GetBundleName();
+    }
+    return bundleName;
 }
 } // namespace OHOS::ObjectStore

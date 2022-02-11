@@ -42,8 +42,6 @@ public:
         const PipeInfo &pipeInfo, const DeviceId &deviceId, const uint8_t *ptr, int size, const MessageInfo &info);
     bool IsSameStartedOnPeer(const struct PipeInfo &pipeInfo, const struct DeviceId &peer);
 
-    void SetMessageTransFlag(const PipeInfo &pipeInfo, bool flag);
-
     int CreateSessionServer(const std::string &sessionName) const;
 
     int RemoveSessionServer(const std::string &sessionName) const;

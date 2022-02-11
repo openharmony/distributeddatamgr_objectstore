@@ -12,10 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define LOG_TAG "UvQueue"
 #include "uv_queue.h"
 
-#include "js_util.h"
 #include "logger.h"
 
 namespace OHOS::ObjectStore {
@@ -29,8 +27,12 @@ UvQueue::~UvQueue()
     LOG_DEBUG("no memory leak for queue-callback");
 }
 
-void UvQueue::CallFunction(const std::string &sessionId, const std::vector<std::string> &changeData, napi_ref callback)
+void UvQueue::CallFunction(Process process, void *argv)
 {
+    if (process == nullptr || argv == nullptr) {
+        LOG_ERROR("nullptr");
+        return;
+    }
     uv_work_t *work = new (std::nothrow) uv_work_t;
     if (work == nullptr) {
         LOG_ERROR("no memory for uv_work_t");
@@ -39,14 +41,14 @@ void UvQueue::CallFunction(const std::string &sessionId, const std::vector<std::
     work->data = this;
     {
         std::unique_lock<std::shared_mutex> cacheLock(mutex_);
-        if (args_.count(callback) != 0) {
-            std::pair<std::string, std::vector<std::string>> newData = args_.at(callback);
-            std::for_each(
-                changeData.begin(), changeData.end(), [&](const auto &item) { newData.second.push_back(item); });
-            args_.insert_or_assign(callback, newData);
+        if (args_.count(process) != 0) {
+            std::list<void *> newData = args_.at(process);
+            newData.push_back(argv);
+            args_.insert_or_assign(process, newData);
         } else {
-            std::pair<std::string, std::vector<std::string>> data(sessionId, changeData);
-            args_.insert_or_assign(callback, data);
+            std::list<void *> data;
+            data.push_back(argv);
+            args_.insert_or_assign(process, data);
         }
     }
 
@@ -54,26 +56,11 @@ void UvQueue::CallFunction(const std::string &sessionId, const std::vector<std::
         loop_, work, [](uv_work_t *work) {},
         [](uv_work_t *work, int uvstatus) {
             auto queue = static_cast<UvQueue *>(work->data);
-            const int argc = 2;
-            napi_value argv[argc];
             {
                 std::unique_lock<std::shared_mutex> cacheLock(queue->mutex_);
-                std::for_each(queue->args_.begin(), queue->args_.end(), [&](const auto &item) {
-                    napi_value callback = nullptr;
-                    napi_get_reference_value(queue->env_, item.first, &callback);
-                    napi_value global = nullptr;
-                    napi_get_global(queue->env_, &global);
-                    JSUtil::SetValue(queue->env_, item.second.first, argv[0]);
-                    JSUtil::SetValue(queue->env_, item.second.second, argv[1]);
-                    LOG_INFO(
-                        "start %{public}s, %{public}s", item.second.first.c_str(), item.second.second.at(0).c_str());
-                    napi_value result;
-                    napi_status status = napi_call_function(queue->env_, global, callback, argc, argv, &result);
-                    if (status != napi_ok) {
-                        LOG_ERROR("notify data change failed status:%{public}d callback:%{public}p", status, callback);
-                    }
-                    LOG_INFO("end");
-                });
+                for (auto item:queue->args_) {
+                    item.first(queue->env_, item.second);
+                }
                 queue->args_.clear();
             }
 

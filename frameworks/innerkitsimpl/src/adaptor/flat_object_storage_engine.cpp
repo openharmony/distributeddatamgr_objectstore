@@ -18,6 +18,7 @@
 #include "objectstore_errors.h"
 #include "process_communicator_impl.h"
 #include "securec.h"
+#include "softbus_adapter.h"
 #include "string_utils.h"
 #include "types_export.h"
 
@@ -266,6 +267,21 @@ uint32_t FlatObjectStorageEngine::UnRegisterObserver(const std::string &key)
     }
     LOG_INFO("end UnRegisterObserver %{public}s", key.c_str());
     observerMap_.erase(key);
+    return SUCCESS;
+}
+
+uint32_t FlatObjectStorageEngine::SetStatusNotifier(std::shared_ptr<StatusWatcher> watcher)
+{
+    if (!isOpened_) {
+        LOG_ERROR("FlatObjectStorageEngine::SetStatusNotifier kvStore has not init");
+        return ERR_DB_NOT_INIT;
+    }
+    auto databaseStatusNotifyCallback = [watcher](std::string userId, std::string appId, std::string storeId,
+                                            const std::string deviceId, bool onlineStatus) -> void {
+        watcher->OnChanged(
+            storeId, SoftBusAdapter::GetInstance()->ToNodeID(deviceId), onlineStatus ? "online" : "offline");
+    };
+    storeManager_->SetStoreStatusNotifier(databaseStatusNotifyCallback);
     return SUCCESS;
 }
 

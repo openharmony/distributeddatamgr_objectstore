@@ -12,9 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef OHOS_UV_QUEUE_H
-#define OHOS_UV_QUEUE_H
+#ifndef UV_QUEUE_H
+#define UV_QUEUE_H
 #include <functional>
+#include <list>
 #include <map>
 #include <shared_mutex>
 
@@ -23,17 +24,19 @@
 #include "uv.h"
 
 namespace OHOS::ObjectStore {
+typedef void (*Process)(napi_env env, std::list<void *> &);
 class UvQueue {
 public:
     UvQueue(napi_env env);
     virtual ~UvQueue();
 
-    void CallFunction(const std::string &sessionId, const std::vector<std::string> &changeData, napi_ref callback);
+    void CallFunction(Process process, void *argv);
 
 private:
-    napi_env env_ = nullptr;
+    napi_env env_;
     std::shared_mutex mutex_{};
-    std::map<napi_ref, std::pair<std::string, std::vector<std::string>>> args_;
+    // key is callback,value is list of args
+    std::map<Process, std::list<void *>> args_;
     uv_loop_s *loop_ = nullptr;
 };
 } // namespace OHOS::ObjectStore

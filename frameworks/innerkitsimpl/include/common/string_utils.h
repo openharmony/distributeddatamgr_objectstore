@@ -48,7 +48,8 @@ public:
     }
     static uint32_t BytesToStrWithType(Bytes input, std::string &str)
     {
-        if (input.end() - input.begin() <= sizeof(Type)) {
+        uint32_t len = input.end() - input.begin();
+        if (len <= sizeof(Type)) {
             LOG_ERROR("StringUtils:BytesToStrWithType get input len err.");
             return ERR_DATA_LEN;
         }

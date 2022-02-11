@@ -68,13 +68,16 @@ private:
 
 class StatusEventListener : public EventListener {
 public:
-    StatusEventListener(JSWatcher *watcher, DistributedObjectStore *objectStore, DistributedObject *object);
-
+    StatusEventListener(JSWatcher *watcher, const std::string &sessionId);
     bool Add(napi_env env, napi_value handler) override;
 
     bool Del(napi_env env, napi_value handler) override;
 
     void Clear(napi_env env) override;
+
+private:
+    JSWatcher *watcher_;
+    std::string sessionId_;
 };
 
 class JSWatcher : public UvQueue {
@@ -89,16 +92,34 @@ public:
 
     void Emit(const char *type, const std::string &sessionId, const std::vector<std::string> &changeData);
 
+    void Emit(const char *type, const std::string &sessionId, const std::string &networkId, const std::string &status);
+
 private:
+    struct ChangeArgs {
+        ChangeArgs(const napi_ref callback, const std::string &sessionId, const std::vector<std::string> &changeData);
+        napi_ref callback_;
+        const std::string sessionId_;
+        const std::vector<std::string> changeData_;
+    };
+    struct StatusArgs {
+        StatusArgs(const napi_ref callback, const std::string &sessionId, const std::string &networkId,
+            const std::string &status);
+        napi_ref callback_;
+        const std::string sessionId_;
+        const std::string networkId_;
+        const std::string status_;
+    };
     EventListener *Find(const char *type);
+    static void ProcessChange(napi_env env, std::list<void *> &args);
+    static void ProcessStatus(napi_env env, std::list<void *> &args);
     napi_env env_;
     ChangeEventListener *changeEventListener_;
     StatusEventListener *statusEventListener_;
 };
 
-class WatcherImpl : public ObjectWatcher, public FlatObjectWatcher {
+class WatcherImpl : public ObjectWatcher {
 public:
-    WatcherImpl(JSWatcher *watcher, const std::string &sessionId) : FlatObjectWatcher(sessionId), watcher_(watcher)
+    WatcherImpl(JSWatcher *watcher) : watcher_(watcher)
     {
     }
 

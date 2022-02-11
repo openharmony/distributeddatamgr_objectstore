@@ -88,25 +88,5 @@ bool CommunicationProviderImpl::IsSameStartedOnPeer(const PipeInfo &pipeInfo, co
 {
     return appPipeMgr_.IsSameStartedOnPeer(pipeInfo, peer);
 }
-
-DeviceInfo CommunicationProviderImpl::GetLocalBasicInfo() const
-{
-    return appDeviceHandler_.GetLocalBasicInfo();
-}
-
-std::vector<DeviceInfo> CommunicationProviderImpl::GetRemoteNodesBasicInfo() const
-{
-    return appDeviceHandler_.GetRemoteNodesBasicInfo();
-}
-
-std::string CommunicationProviderImpl::GetUdidByNodeId(const std::string &nodeId) const
-{
-    return appDeviceHandler_.GetUdidByNodeId(nodeId);
-}
-
-void CommunicationProviderImpl::SetMessageTransFlag(const PipeInfo &pipeInfo, bool flag)
-{
-    appPipeMgr_.SetMessageTransFlag(pipeInfo, flag);
-}
 } // namespace ObjectStore
 } // namespace OHOS

@@ -143,7 +143,7 @@ function leaveSession(obj) {
     }
     Object.keys(obj).forEach(key => {
         Object.defineProperty(obj, key, {
-            value: obj.get(key),
+            value: obj[key],
             configurable: true,
             writable: true,
             enumerable: true,

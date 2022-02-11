@@ -41,6 +41,7 @@ public:
     uint32_t UnWatch(const std::string &objectId);
     uint32_t Put(const std::string &sessionId, const std::string &key, std::vector<uint8_t> value);
     uint32_t Get(std::string &sessionId, const std::string &key, Bytes &value);
+    uint32_t SetStatusNotifier(std::shared_ptr<StatusWatcher> sharedPtr);
 
 private:
     std::shared_ptr<FlatObjectStorageEngine> storageEngine_;

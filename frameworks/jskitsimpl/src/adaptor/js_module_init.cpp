@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 
-#include <cstring>
-
 #include "js_common.h"
-#include "js_distributedobject.h"
 #include "js_distributedobjectstore.h"
+#include "js_notifier_impl.h"
 #include "logger.h"
 
 using namespace OHOS::ObjectStore;

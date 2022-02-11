@@ -57,11 +57,6 @@ bool AppPipeHandler::IsSameStartedOnPeer(
     return softbusAdapter_->IsSameStartedOnPeer(pipeInfo, peer);
 }
 
-void AppPipeHandler::SetMessageTransFlag(const PipeInfo &pipeInfo, bool flag)
-{
-    return softbusAdapter_->SetMessageTransFlag(pipeInfo, flag);
-}
-
 int AppPipeHandler::CreateSessionServer(const std::string &sessionName) const
 {
     return softbusAdapter_->CreateSessionServerAdapter(sessionName);

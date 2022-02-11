@@ -182,6 +182,19 @@ void DistributedObjectStoreImpl::UpdateStatus(const std::string &status)
     }
     return;
 }
+uint32_t DistributedObjectStoreImpl::SetStatusNotifier(std::shared_ptr<StatusNotifier> notifier)
+{
+    if (flatObjectStore_ == nullptr) {
+        LOG_ERROR("DistributedObjectStoreImpl::Sync object err ");
+        return ERR_NULL_OBJECTSTORE;
+    }
+    std::shared_ptr<StatusNotifierProxy> watcherProxy = std::make_shared<StatusNotifierProxy>(notifier);
+    uint32_t status = flatObjectStore_->SetStatusNotifier(watcherProxy);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectStoreImpl::Watch failed %{public}d", status);
+    }
+    return status;
+}
 
 WatcherProxy::WatcherProxy(const std::shared_ptr<ObjectWatcher> objectWatcher, const std::string &sessionId)
     : FlatObjectWatcher(sessionId), objectWatcher_(objectWatcher)
@@ -213,5 +226,23 @@ DistributedObjectStore *DistributedObjectStore::GetInstance(const std::string &b
         }
     }
     return instPtr;
+}
+
+void StatusNotifierProxy::OnChanged(
+    const std::string &sessionId, const std::string &networkId, const std::string &onlineStatus)
+{
+    if (notifier != nullptr) {
+        notifier->OnChanged(sessionId, networkId, onlineStatus);
+    }
+}
+
+StatusNotifierProxy::StatusNotifierProxy(const std::shared_ptr<StatusNotifier> &notifier) : notifier(notifier)
+{
+}
+
+StatusNotifierProxy::~StatusNotifierProxy()
+{
+    LOG_ERROR("destroy");
+    notifier = nullptr;
 }
 } // namespace OHOS::ObjectStore

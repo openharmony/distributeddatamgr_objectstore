@@ -15,6 +15,7 @@
 
 #include "flat_object_store.h"
 
+#include "distributed_objectstore_impl.h"
 #include "logger.h"
 #include "objectstore_errors.h"
 
@@ -106,5 +107,13 @@ uint32_t FlatObjectStore::Get(std::string &sessionId, const std::string &key, By
         return ERR_DB_NOT_INIT;
     }
     return storageEngine_->GetItem(sessionId, key, value);
+}
+uint32_t FlatObjectStore::SetStatusNotifier(std::shared_ptr<StatusWatcher> notifier)
+{
+    if (!storageEngine_->isOpened_) {
+        LOG_ERROR("FlatObjectStore::DB has not inited");
+        return ERR_DB_NOT_INIT;
+    }
+    return storageEngine_->SetStatusNotifier(notifier);
 }
 } // namespace OHOS::ObjectStore

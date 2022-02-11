@@ -22,6 +22,11 @@
 #include "distributed_object.h"
 
 namespace OHOS::ObjectStore {
+class StatusNotifier {
+public:
+    virtual void OnChanged(
+        const std::string &sessionId, const std::string &networkId, const std::string &onlineStatus) = 0;
+};
 class DistributedObjectStore {
 public:
     virtual ~DistributedObjectStore(){};
@@ -31,6 +36,7 @@ public:
     virtual uint32_t DeleteObject(const std::string &sessionId) = 0;
     virtual uint32_t Watch(DistributedObject *object, std::shared_ptr<ObjectWatcher> objectWatcher) = 0;
     virtual uint32_t UnWatch(DistributedObject *object) = 0;
+    virtual uint32_t SetStatusNotifier(std::shared_ptr<StatusNotifier> notifier) = 0;
     virtual void TriggerSync();
     virtual void TriggerRestore(std::function<void()> notifier);
 };

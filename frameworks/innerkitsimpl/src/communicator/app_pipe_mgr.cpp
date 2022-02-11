@@ -144,23 +144,5 @@ bool AppPipeMgr::IsSameStartedOnPeer(const struct PipeInfo &pipeInfo, const stru
     }
     return appPipeHandler->IsSameStartedOnPeer(pipeInfo, peer);
 }
-
-void AppPipeMgr::SetMessageTransFlag(const PipeInfo &pipeInfo, bool flag)
-{
-    if (pipeInfo.pipeId.empty()) {
-        return;
-    }
-    std::shared_ptr<AppPipeHandler> appPipeHandler;
-    {
-        std::lock_guard<std::mutex> lock(dataBusMapMutex_);
-        auto it = dataBusMap_.find(pipeInfo.pipeId);
-        if (it == dataBusMap_.end()) {
-            LOG_WARN("pipeInfo:%{public}s not found", pipeInfo.pipeId.c_str());
-            return;
-        }
-        appPipeHandler = it->second;
-    }
-    appPipeHandler->SetMessageTransFlag(pipeInfo, flag);
-}
 } // namespace ObjectStore
 } // namespace OHOS

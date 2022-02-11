@@ -45,5 +45,12 @@ namespace OHOS::ObjectStore {
             return nullptr;                             \
         }                                               \
     }
+#define ASSERT_MATCH_ELSE_GOTO_ERROR(condition)         \
+    {                                                   \
+        if (!(condition)) {                             \
+            LOG_ERROR("error! %{public}s", #condition); \
+            goto ERROR;                                 \
+        }                                               \
+    }
 } // namespace OHOS::ObjectStore
 #endif // JS_COMMON_H

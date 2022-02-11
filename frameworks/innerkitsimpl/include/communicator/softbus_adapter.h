@@ -119,8 +119,9 @@ public:
 
     void SetOpenSessionId(const int &sessionId);
 
-private:
     std::string ToNodeID(const std::string &nodeId) const;
+
+private:
     mutable std::mutex networkMutex_{};
     mutable std::map<std::string, std::string> networkId2Udid_{};
     DeviceInfo localInfo_{};

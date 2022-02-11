@@ -23,11 +23,5 @@ CommunicationProvider &CommunicationProvider::GetInstance()
 {
     return ArkCommunicationProvider::Init();
 }
-
-std::shared_ptr<CommunicationProvider> CommunicationProvider::MakeCommunicationProvider()
-{
-    static std::shared_ptr<CommunicationProvider> instance(&ArkCommunicationProvider::Init(), [](void *) {});
-    return instance;
-}
 } // namespace ObjectStore
 } // namespace OHOS
