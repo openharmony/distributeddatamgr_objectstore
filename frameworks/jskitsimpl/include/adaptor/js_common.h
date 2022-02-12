@@ -53,4 +53,6 @@ namespace OHOS::ObjectStore {
         }                                               \
     }
 } // namespace OHOS::ObjectStore
+static const char *CHANGE = "change";
+static const char *STATUS = "status";
 #endif // JS_COMMON_H

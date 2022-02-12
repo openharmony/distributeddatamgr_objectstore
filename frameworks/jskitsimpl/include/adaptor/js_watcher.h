@@ -86,7 +86,7 @@ public:
 
     ~JSWatcher();
 
-    void On(const char *type, napi_value handler);
+    bool On(const char *type, napi_value handler);
 
     void Off(const char *type, napi_value handler = nullptr);
 

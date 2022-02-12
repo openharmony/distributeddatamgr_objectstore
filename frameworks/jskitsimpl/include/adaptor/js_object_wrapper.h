@@ -28,7 +28,7 @@ public:
     JSObjectWrapper(DistributedObjectStore *objectStore, DistributedObject *object);
     virtual ~JSObjectWrapper();
     DistributedObject *GetObject();
-    void AddWatch(napi_env env, const char *type, napi_value handler);
+    bool AddWatch(napi_env env, const char *type, napi_value handler);
     void DeleteWatch(napi_env env, const char *type, napi_value handler = nullptr);
 
 private:

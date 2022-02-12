@@ -39,14 +39,14 @@ JSWatcher::~JSWatcher()
     statusEventListener_ = nullptr;
 }
 
-void JSWatcher::On(const char *type, napi_value handler)
+bool JSWatcher::On(const char *type, napi_value handler)
 {
     EventListener *listener = Find(type);
     if (listener == nullptr) {
         LOG_ERROR("error type %{public}s", type);
-        return;
+        return false;
     }
-    listener->Add(env_, handler);
+    return listener->Add(env_, handler);
 }
 
 void JSWatcher::Off(const char *type, napi_value handler)
@@ -112,10 +112,10 @@ void JSWatcher::Emit(const char *type, const std::string &sessionId, const std::
 
 EventListener *JSWatcher::Find(const char *type)
 {
-    if (!strcmp("change", type)) {
+    if (!strcmp(CHANGE, type)) {
         return changeEventListener_;
     }
-    if (!strcmp("status", type)) {
+    if (!strcmp(STATUS, type)) {
         return statusEventListener_;
     }
     return nullptr;
@@ -204,7 +204,7 @@ void EventListener::Clear(napi_env env)
 bool EventListener::Del(napi_env env, napi_value handler)
 {
     EventHandler *temp = nullptr;
-    for (EventHandler *i = handlers_; i != nullptr; i = handlers_) {
+    for (EventHandler *i = handlers_; i != nullptr; i = i->next) {
         napi_value callback = nullptr;
         napi_get_reference_value(env, i->callbackRef, &callback);
         bool isEquals = false;
@@ -226,16 +226,14 @@ bool EventListener::Del(napi_env env, napi_value handler)
 
 bool EventListener::Add(napi_env env, napi_value handler)
 {
-    bool isEmpty = false;
     if (Find(env, handler) != nullptr) {
         LOG_ERROR("has added,return");
-        return isEmpty;
+        return false;
     }
 
     if (handlers_ == nullptr) {
         handlers_ = new EventHandler();
         handlers_->next = nullptr;
-        isEmpty = true;
     } else {
         auto temp = new EventHandler();
         temp->next = handlers_;
@@ -243,7 +241,7 @@ bool EventListener::Add(napi_env env, napi_value handler)
     }
     napi_create_reference(env, handler, 1, &handlers_->callbackRef);
     LOG_INFO("add %{public}p in  %{public}p", handler, handlers_->callbackRef);
-    return isEmpty;
+    return true;
 }
 
 void WatcherImpl::OnChanged(const std::string &sessionid, const std::vector<std::string> &changedData)
@@ -252,7 +250,7 @@ void WatcherImpl::OnChanged(const std::string &sessionid, const std::vector<std:
         LOG_ERROR("watcher_ is null");
         return;
     }
-    watcher_->Emit("change", sessionid, changedData);
+    watcher_->Emit(CHANGE, sessionid, changedData);
 }
 
 WatcherImpl::~WatcherImpl()
@@ -313,14 +311,19 @@ ChangeEventListener::ChangeEventListener(
 
 bool StatusEventListener::Add(napi_env env, napi_value handler)
 {
+    LOG_INFO("Add status watch %{public}s %{public}p", sessionId_.c_str(), handler);
     NotifierImpl::GetInstance()->AddWatcher(sessionId_, watcher_);
     return EventListener::Add(env, handler);
 }
 
 bool StatusEventListener::Del(napi_env env, napi_value handler)
 {
-    NotifierImpl::GetInstance()->DelWatcher(sessionId_);
-    return EventListener::Del(env, handler);
+    if(EventListener::Del(env, handler)) {
+        LOG_INFO("Del status watch %{public}s", sessionId_.c_str());
+        NotifierImpl::GetInstance()->DelWatcher(sessionId_);
+        return true;
+    }
+    return false;
 }
 
 void StatusEventListener::Clear(napi_env env)

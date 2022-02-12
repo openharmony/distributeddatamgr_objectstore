@@ -42,10 +42,12 @@ public:
     bool isOpened_ = false;
 
 private:
+    void SyncAllData(const std::string &sessionId, DistributedDB::KvStoreNbDelegate *kvstore);
     std::shared_mutex operationMutex_{};
     std::shared_ptr<DistributedDB::KvStoreDelegateManager> storeManager_;
     std::map<std::string, DistributedDB::KvStoreNbDelegate *> delegates_;
     std::map<std::string, std::shared_ptr<TableWatcher>> observerMap_;
+    std::shared_ptr<StatusWatcher> statusWatcher_ = nullptr;
 };
 } // namespace OHOS::ObjectStore
 #endif

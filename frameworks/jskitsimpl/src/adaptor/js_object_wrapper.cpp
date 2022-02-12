@@ -37,13 +37,13 @@ DistributedObject *JSObjectWrapper::GetObject()
     return object_;
 }
 
-void JSObjectWrapper::AddWatch(napi_env env, const char *type, napi_value handler)
+bool JSObjectWrapper::AddWatch(napi_env env, const char *type, napi_value handler)
 {
     std::unique_lock<std::shared_mutex> cacheLock(watchMutex_);
     if (watcher_ == nullptr) {
         watcher_ = std::make_unique<JSWatcher>(env, objectStore_, object_);
     }
-    watcher_->On(type, handler);
+    return watcher_->On(type, handler);
     LOG_INFO("JSObjectWrapper::AddWatch %{public}s", type);
 }
 
