@@ -43,7 +43,10 @@
         "rom": "",
         "ram": "",
         "deps": {
-            "components": [],
+            "components": [
+                "ability_base",
+                "ability_runtime"
+            ],
             "third_party": []
         },
         "build": {
