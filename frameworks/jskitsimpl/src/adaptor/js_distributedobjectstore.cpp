@@ -295,7 +295,7 @@ void JSDistributedObjectStore::RestoreWatchers(napi_env env, OHOS::ObjectStore::
             wrapper->AddWatch(env, CHANGE, callbackValue);
         }
     } else {
-        LOG_INFO("no callback %{public}s %{public}d", sessionId.c_str(), g_changeCallBacks.size());
+        LOG_INFO("no callback %{public}s", sessionId.c_str());
     }
     if (g_statusCallBacks.count(sessionId) != 0) {
         LOG_INFO("restore status on %{public}s", sessionId.c_str());
@@ -308,7 +308,7 @@ void JSDistributedObjectStore::RestoreWatchers(napi_env env, OHOS::ObjectStore::
             wrapper->AddWatch(env, STATUS, callbackValue);
         }
     } else {
-        LOG_INFO("no status callback %{public}s %{public}d", sessionId.c_str(), g_statusCallBacks.size());
+        LOG_INFO("no status callback %{public}s", sessionId.c_str());
     }
 }
 } // namespace OHOS::ObjectStore
