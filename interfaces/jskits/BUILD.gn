@@ -35,6 +35,7 @@ action("gen_distributed_data_object_abc") {
     rebase_path("${ts2abc_build_path}"),
     "--node-modules",
     rebase_path("${node_modules}"),
+    "--module",
   ]
   deps = [ "//ark/ts2abc/ts2panda:ark_ts2abc_build" ]
   inputs = [ "distributed_data_object.js" ]
