@@ -163,7 +163,7 @@ void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
                 break;
             }
 
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds (100));
         }
         LOG_WARN("restore result %{public}d", status);
         notifier();
