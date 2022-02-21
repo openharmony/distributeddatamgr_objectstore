@@ -138,12 +138,14 @@ void DistributedObjectStoreImpl::TriggerSync()
 void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
 {
     std::thread th = std::thread([=]() {
-        bool isFinished = true;
+        bool isFinished;
+        int16_t i = 0;
+        constexpr static int16_t MAX_RETRY_SIZE = 5000;
         std::map<std::string, SyncStatus> syncStatus;
         for (auto &item : objects_) {
             syncStatus[item->GetSessionId()] = SYNC_START;
         }
-        while (true) {
+        for (i = 0; i < MAX_RETRY_SIZE; i++) {
             {
                 std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
                 for (auto &item : objects_) {
@@ -172,8 +174,10 @@ void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
                 }
             }
 
+            isFinished = true;
             for (auto &item : syncStatus) {
                 if (item.second != SYNC_SUCCESS) {
+                    LOG_INFO("%{public}s not ready", item.first.c_str());
                     isFinished = false;
                     break;
                 }

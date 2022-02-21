@@ -39,8 +39,8 @@ public:
     uint32_t RegisterObserver(const std::string &key, std::shared_ptr<TableWatcher> watcher) override;
     uint32_t UnRegisterObserver(const std::string &key) override;
     uint32_t SetStatusNotifier(std::shared_ptr<StatusWatcher> watcher) override;
-    void SyncAllData(
-        const std::string &sessionId, const std::function<void(const std::map<std::string, DistributedDB::DBStatus> &)> &onComplete);
+    void SyncAllData(const std::string &sessionId,
+        const std::function<void(const std::map<std::string, DistributedDB::DBStatus> &)> &onComplete);
     bool isOpened_ = false;
 
 private:
