@@ -18,11 +18,10 @@
 #include "distributed_object_impl.h"
 #include "distributed_objectstore_impl.h"
 #include "objectstore_errors.h"
+#include "softbus_adapter.h"
 #include "string_utils.h"
 
 namespace OHOS::ObjectStore {
-#define TO_STRING(input) #input
-static constexpr char PROPERTY_STATUS_NAME[] = "status";
 DistributedObjectStoreImpl::DistributedObjectStoreImpl(FlatObjectStore *flatObjectStore)
     : flatObjectStore_(flatObjectStore)
 {
@@ -134,52 +133,60 @@ uint32_t DistributedObjectStoreImpl::UnWatch(DistributedObject *object)
 
 void DistributedObjectStoreImpl::TriggerSync()
 {
-    UpdateStatus(TO_STRING(START));
 }
 
 void DistributedObjectStoreImpl::TriggerRestore(std::function<void()> notifier)
 {
     std::thread th = std::thread([=]() {
-        constexpr uint32_t RETRY_TIMES = 50;
-        uint32_t i = 0;
-        uint32_t status = ERR_DB_NOT_INIT;
-        while (i++ < RETRY_TIMES) {
-            bool isFinished = true;
-            std::string syncStatus;
+        bool isFinished = true;
+        std::map<std::string, SyncStatus> syncStatus;
+        for (auto &item : objects_) {
+            syncStatus[item->GetSessionId()] = SYNC_START;
+        }
+        while (true) {
             {
                 std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
-                for (auto item : objects_) {
-                    status = item->GetString(PROPERTY_STATUS_NAME, syncStatus);
-                    if (status != SUCCESS) {
-                        LOG_WARN("%{public}s not ready", item->GetSessionId().c_str());
-                        isFinished = false;
-                        break;
+                for (auto &item : objects_) {
+                    if (syncStatus[item->GetSessionId()] != SYNC_SUCCESS
+                        && syncStatus[item->GetSessionId()] != SYNCING) {
+                        auto onComplete = [this, item, &syncStatus](
+                                              const std::map<std::string, DistributedDB::DBStatus> &devices) {
+                            LOG_INFO("%{public}s pull data", item->GetSessionId().c_str());
+                            std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
+                            SyncStatus result = SYNC_SUCCESS;
+                            for (auto device : devices) {
+                                if (device.second != DistributedDB::OK) {
+                                    result = SYNC_FAIL;
+                                    LOG_ERROR("%{public}s pull data fail %{public}d in device %{public}s",
+                                        item->GetSessionId().c_str(), device.second,
+                                        SoftBusAdapter::GetInstance()->ToNodeID(device.first).c_str());
+                                }
+                            }
+                            LOG_INFO("%{public}s pull data success", item->GetSessionId().c_str());
+                            syncStatus[item->GetSessionId()] = result;
+                        };
+                        LOG_INFO("start sync %{public}s", item->GetSessionId().c_str());
+                        syncStatus[item->GetSessionId()] = SYNCING;
+                        flatObjectStore_->SyncAllData(item->GetSessionId(), onComplete);
                     }
                 }
             }
 
-            if (isFinished) {
-                status = SUCCESS;
-                break;
+            for (auto &item : syncStatus) {
+                if (item.second != SYNC_SUCCESS) {
+                    isFinished = false;
+                    break;
+                }
             }
-
-            std::this_thread::sleep_for(std::chrono::milliseconds (100));
+            if (!isFinished) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
         }
-        LOG_WARN("restore result %{public}d", status);
+        LOG_WARN("restore result");
         notifier();
         LOG_WARN("notify end");
-        UpdateStatus(TO_STRING(FINISHED));
     });
     th.detach();
-    return;
-}
-void DistributedObjectStoreImpl::UpdateStatus(const std::string &status)
-{
-    std::unique_lock<std::shared_mutex> cacheLock(dataMutex_);
-    LOG_INFO("update status to %{public}s", status.c_str());
-    for (auto item : objects_) {
-        item->PutString(PROPERTY_STATUS_NAME, status);
-    }
     return;
 }
 uint32_t DistributedObjectStoreImpl::SetStatusNotifier(std::shared_ptr<StatusNotifier> notifier)

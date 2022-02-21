@@ -39,10 +39,11 @@ public:
     uint32_t RegisterObserver(const std::string &key, std::shared_ptr<TableWatcher> watcher) override;
     uint32_t UnRegisterObserver(const std::string &key) override;
     uint32_t SetStatusNotifier(std::shared_ptr<StatusWatcher> watcher) override;
+    void SyncAllData(
+        const std::string &sessionId, const std::function<void(const std::map<std::string, DistributedDB::DBStatus> &)> &onComplete);
     bool isOpened_ = false;
 
 private:
-    void SyncAllData(const std::string &sessionId, DistributedDB::KvStoreNbDelegate *kvstore);
     std::shared_mutex operationMutex_{};
     std::shared_ptr<DistributedDB::KvStoreDelegateManager> storeManager_;
     std::map<std::string, DistributedDB::KvStoreNbDelegate *> delegates_;

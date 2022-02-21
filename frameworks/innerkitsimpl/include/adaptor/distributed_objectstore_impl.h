@@ -26,8 +26,10 @@
 namespace OHOS::ObjectStore {
 class WatcherProxy;
 enum SyncStatus {
-    START,
-    FINISHED
+    SYNC_START,
+    SYNCING,
+    SYNC_SUCCESS,
+    SYNC_FAIL,
 };
 class DistributedObjectStoreImpl : public DistributedObjectStore {
 public:
@@ -43,7 +45,6 @@ public:
     void TriggerRestore(std::function<void()> notifier) override;
 
 private:
-    void UpdateStatus(const std::string &status);
     DistributedObjectImpl *CacheObject(const std::string &sessionId, FlatObjectStore *flatObjectStore);
     FlatObjectStore *flatObjectStore_ = nullptr;
     std::map<DistributedObject *, std::shared_ptr<WatcherProxy>> watchers_;

@@ -33,7 +33,7 @@ static std::map<std::string, std::list<napi_ref>> g_changeCallBacks;
 void JSDistributedObjectStore::AddCallback(napi_env env, std::map<std::string, std::list<napi_ref>> &callbacks,
     const std::string &sessionId, napi_value callback)
 {
-    LOG_INFO("add callback %{public}s %{public}p", sessionId.c_str(), callback);
+    LOG_INFO("add callback2233 %{public}s %{public}p", sessionId.c_str(), callback);
     napi_ref ref = nullptr;
     napi_status status = napi_create_reference(env, callback, 1, &ref);
     CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
@@ -207,6 +207,11 @@ napi_value JSDistributedObjectStore::JSOn(napi_env env, napi_callback_info info)
     }
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
+    auto fuc = [] ()  {
+      LOG_ERROR("hanlu restore finish");
+    };
+    LOG_ERROR("hanlu start111");
+    DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env))->TriggerRestore(fuc);
     return result;
 }
 
