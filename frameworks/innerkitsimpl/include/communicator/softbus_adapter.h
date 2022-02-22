@@ -133,7 +133,7 @@ private:
     ISessionListener sessionListener_{};
     std::unique_ptr<Semaphore> semaphore_{};
     std::mutex notifyFlagMutex_{};
-    std::map <std::string, bool> notifyFlag_;
+    std::map<std::string, bool> notifyFlag_;
 };
 } // namespace ObjectStore
 } // namespace OHOS

@@ -42,6 +42,8 @@ public:
     uint32_t Put(const std::string &sessionId, const std::string &key, std::vector<uint8_t> value);
     uint32_t Get(std::string &sessionId, const std::string &key, Bytes &value);
     uint32_t SetStatusNotifier(std::shared_ptr<StatusWatcher> sharedPtr);
+    uint32_t SyncAllData(const std::string &sessionId,
+        const std::function<void(const std::map<std::string, DistributedDB::DBStatus> &)> &onComplete);
 
 private:
     std::shared_ptr<FlatObjectStorageEngine> storageEngine_;

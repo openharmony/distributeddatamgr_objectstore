@@ -21,13 +21,14 @@
 #include <shared_mutex>
 
 #include "distributed_objectstore.h"
-#include "distributed_object_impl.h"
 
 namespace OHOS::ObjectStore {
 class WatcherProxy;
 enum SyncStatus {
-    START,
-    FINISHED
+    SYNC_START,
+    SYNCING,
+    SYNC_SUCCESS,
+    SYNC_FAIL,
 };
 class DistributedObjectStoreImpl : public DistributedObjectStore {
 public:
@@ -43,12 +44,11 @@ public:
     void TriggerRestore(std::function<void()> notifier) override;
 
 private:
-    void UpdateStatus(const std::string &status);
-    DistributedObjectImpl *CacheObject(const std::string &sessionId, FlatObjectStore *flatObjectStore);
+    DistributedObject *CacheObject(const std::string &sessionId, FlatObjectStore *flatObjectStore);
     FlatObjectStore *flatObjectStore_ = nullptr;
     std::map<DistributedObject *, std::shared_ptr<WatcherProxy>> watchers_;
     std::shared_mutex dataMutex_{};
-    std::vector<DistributedObjectImpl *> objects_{};
+    std::vector<DistributedObject *> objects_{};
 };
 class StatusNotifierProxy : public StatusWatcher {
 public:

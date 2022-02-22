@@ -41,8 +41,8 @@ public:
     static napi_status SetValue(napi_env env, const std::vector<std::string> &in, napi_value &out);
 
     /* napi_value <-> std::vector<uint8_t> */
-    static napi_status GetValue(napi_env env, napi_value in, std::vector<uint8_t>& out);
-    static napi_status SetValue(napi_env env, const std::vector<uint8_t>& in, napi_value& out);
+    static napi_status GetValue(napi_env env, napi_value in, std::vector<uint8_t> &out);
+    static napi_status SetValue(napi_env env, const std::vector<uint8_t> &in, napi_value &out);
 };
 
 #define LOG_ERROR_RETURN(condition, message, retVal)             \

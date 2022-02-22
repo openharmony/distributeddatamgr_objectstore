@@ -41,8 +41,8 @@ uint32_t GetNum(Bytes &data, int32_t offset, void *val, int32_t valLen)
     int32_t len = offset + valLen;
     int32_t dataLen = data.size();
     if (dataLen < len) {
-        LOG_ERROR("DistributedObjectImpl:GetNum data.size() %{public}d, offset %{public}d, valLen %{public}d",
-            dataLen, offset, valLen);
+        LOG_ERROR("DistributedObjectImpl:GetNum data.size() %{public}d, offset %{public}d, valLen %{public}d", dataLen,
+            offset, valLen);
         return ERR_DATA_LEN;
     }
     for (int32_t i = 0; i < valLen; i++) {

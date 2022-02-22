@@ -58,7 +58,7 @@ void UvQueue::CallFunction(Process process, void *argv)
             auto queue = static_cast<UvQueue *>(work->data);
             {
                 std::unique_lock<std::shared_mutex> cacheLock(queue->mutex_);
-                for (auto item:queue->args_) {
+                for (auto &item : queue->args_) {
                     item.first(queue->env_, item.second);
                 }
                 queue->args_.clear();

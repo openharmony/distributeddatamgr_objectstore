@@ -112,7 +112,21 @@ uint32_t FlatObjectStorageEngine::CreateTable(const std::string &key)
         std::unique_lock<std::shared_mutex> lock(operationMutex_);
         delegates_.insert_or_assign(key, kvStore);
     }
-    SyncAllData(key, kvStore);
+
+    auto onComplete = [key, this](const std::map<std::string, DistributedDB::DBStatus> &devices) {
+        LOG_INFO("complete");
+        for (auto item : devices) {
+            LOG_INFO("%{public}s pull data result %{public}d in device %{public}s", key.c_str(), item.second,
+                SoftBusAdapter::GetInstance()->ToNodeID(item.first).c_str());
+        }
+        if (statusWatcher_ != nullptr) {
+            for (auto item : devices) {
+                statusWatcher_->OnChanged(key, SoftBusAdapter::GetInstance()->ToNodeID(item.first),
+                    item.second == DistributedDB::OK ? "online" : "offline");
+            }
+        }
+    };
+    SyncAllData(key, onComplete);
     return SUCCESS;
 }
 
@@ -288,31 +302,25 @@ uint32_t FlatObjectStorageEngine::SetStatusNotifier(std::shared_ptr<StatusWatche
     return SUCCESS;
 }
 
-void FlatObjectStorageEngine::SyncAllData(const std::string &sessionId, DistributedDB::KvStoreNbDelegate *kvstore)
+uint32_t FlatObjectStorageEngine::SyncAllData(const std::string &sessionId,
+    const std::function<void(const std::map<std::string, DistributedDB::DBStatus> &)> &onComplete)
 {
     std::vector<DeviceInfo> devices = SoftBusAdapter::GetInstance()->GetDeviceList();
     std::vector<std::string> deviceIds;
+    DistributedDB::KvStoreNbDelegate *kvstore = delegates_.at(sessionId);
     for (auto item : devices) {
         deviceIds.push_back(item.deviceId);
     }
     if (deviceIds.empty()) {
         LOG_INFO("single device,no need sync");
-        return;
+        return ERR_SINGLE_DEVICE;
     }
-    auto onComplete = [sessionId, this](const std::map<std::string, DistributedDB::DBStatus> &devices) {
-        LOG_INFO("complete");
-        for (auto item : devices) {
-            LOG_INFO("%{public}s pull data result %{public}d in device %{public}s", sessionId.c_str(), item.second,
-                SoftBusAdapter::GetInstance()->ToNodeID(item.first).c_str());
-        }
-        if (statusWatcher_ != nullptr) {
-            for (auto item : devices) {
-                statusWatcher_->OnChanged(sessionId, SoftBusAdapter::GetInstance()->ToNodeID(item.first),
-                    item.second == DistributedDB::OK ? "online" : "offline");
-            }
-        }
-    };
-    kvstore->Sync(deviceIds, DistributedDB::SyncMode::SYNC_MODE_PULL_ONLY, onComplete);
+    DistributedDB::DBStatus status = kvstore->Sync(deviceIds, DistributedDB::SyncMode::SYNC_MODE_PULL_ONLY, onComplete);
+    if (status != DistributedDB::DBStatus::OK) {
+        LOG_ERROR("FlatObjectStorageEngine::UnRegisterObserver unRegister err %{public}d", status);
+        return ERR_UNRIGSTER;
+    }
+    return SUCCESS;
 }
 
 void Watcher::OnChange(const DistributedDB::KvStoreChangedData &data)
