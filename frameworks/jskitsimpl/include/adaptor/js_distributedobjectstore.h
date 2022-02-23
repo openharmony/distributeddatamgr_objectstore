@@ -30,15 +30,16 @@ public:
     static napi_value JSOn(napi_env env, napi_callback_info info);
     static napi_value JSOff(napi_env env, napi_callback_info info);
     static std::string GetBundleName(napi_env env);
-
+    static napi_value JSRecordCallback(napi_env env, napi_callback_info info);
+    static napi_value JSDeleteCallback(napi_env env, napi_callback_info info);
 private:
     static napi_value NewDistributedObject(
-        napi_env env, DistributedObjectStore *objectStore, DistributedObject *object);
+        napi_env env, DistributedObjectStore *objectStore, DistributedObject *object, const std::string &objectId);
     static void AddCallback(napi_env env, std::map<std::string, std::list<napi_ref>> &callbacks,
-        const std::string &sessionId, napi_value callback);
+        const std::string &objectId, napi_value callback);
     static void DelCallback(napi_env env, std::map<std::string, std::list<napi_ref>> &callbacks,
         const std::string &sessionId, napi_value callback = nullptr);
-    static void RestoreWatchers(napi_env env, OHOS::ObjectStore::JSObjectWrapper *wrapper);
+    static void RestoreWatchers(napi_env env, JSObjectWrapper *wrapper, const std::string &objectId);
 };
 } // namespace OHOS::ObjectStore
 #endif // JS_DISTRIBUTEDDATAOBJECTSTORE_H
