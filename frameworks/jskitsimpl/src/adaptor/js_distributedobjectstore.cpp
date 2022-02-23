@@ -388,7 +388,6 @@ napi_value JSDistributedObjectStore::JSDeleteCallback(napi_env env, napi_callbac
             DelCallback(env, g_statusCallBacks, objectId);
         }
     } else {
-
         if (!strcmp(CHANGE, type)) {
             DelCallback(env, g_changeCallBacks, objectId, argv[2]);
         } else if (!strcmp(STATUS, type)) {
