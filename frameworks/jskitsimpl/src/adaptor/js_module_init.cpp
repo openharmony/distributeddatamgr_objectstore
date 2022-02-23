@@ -34,6 +34,8 @@ static napi_value DistributedDataObjectExport(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("destroyObjectSync", JSDistributedObjectStore::JSDestroyObjectSync),
         DECLARE_NAPI_FUNCTION("on", JSDistributedObjectStore::JSOn),
         DECLARE_NAPI_FUNCTION("off", JSDistributedObjectStore::JSOff),
+        DECLARE_NAPI_FUNCTION("recordCallback", JSDistributedObjectStore::JSRecordCallback),
+        DECLARE_NAPI_FUNCTION("deleteCallback", JSDistributedObjectStore::JSDeleteCallback),
     };
 
     status = napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);

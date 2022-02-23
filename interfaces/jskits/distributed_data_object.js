@@ -28,11 +28,12 @@ class Distributed {
                 this.__proxy[SESSION_ID] = newValue;
             }
         });
+        this.__objectId = randomNum();
         console.info("constructor success ");
     };
 
     setSessionId(sessionId) {
-        if (sessionId == null || sessionId == undefined || sessionId.length == 0) {
+        if (sessionId == null || sessionId == "") {
             leaveSession(this.__proxy);
             return false;
         }
@@ -41,7 +42,7 @@ class Distributed {
             return true;
         }
         leaveSession(this.__proxy);
-        let object = joinSession(this.__proxy, sessionId);
+        let object = joinSession(this.__proxy, this.__objectId, sessionId);
         if (object != null) {
             this.__proxy = object;
             return true;
@@ -51,16 +52,19 @@ class Distributed {
 
     on(type, callback) {
         onWatch(type, this.__proxy, callback);
+        distributedObject.recordCallback(type, this.__objectId, callback);
     };
 
     off(type, callback) {
         offWatch(type, this.__proxy, callback);
+        distributedObject.deleteCallback(type, this.__objectId, callback);
     };
 
     __proxy;
+    __objectId;
 }
 
-function genSessionId() {
+function randomNum() {
     return Math.random().toString(10).slice(-8);
 }
 
@@ -70,19 +74,18 @@ function newDistributed(obj) {
         console.error("object is null");
         return null;
     }
-    let result = new Distributed(obj);
-    return result;
+    return new Distributed(obj);
 }
 
-function joinSession(obj, sessionId) {
+function joinSession(obj, objectId, sessionId) {
     console.info("start joinSession " + sessionId);
-    if (obj == null) {
+    if (obj == null || sessionId == null || sessionId == "") {
         console.error("object is null");
         return null;
     }
 
-    let object = distributedObject.createObjectSync(sessionId);
-    if (object == null || object == undefined) {
+    let object = distributedObject.createObjectSync(sessionId, objectId);
+    if (object == null) {
         console.error("create fail");
         return null;
     }
@@ -137,7 +140,7 @@ function joinSession(obj, sessionId) {
 
 function leaveSession(obj) {
     console.info("start leaveSession");
-    if (obj == null || obj[SESSION_ID] == undefined || obj[SESSION_ID] == null) {
+    if (obj == null || obj[SESSION_ID] == null || obj[SESSION_ID] == "") {
         console.warn("object is null");
         return;
     }
@@ -175,5 +178,5 @@ function offWatch(type, obj, callback = undefined) {
 
 export default {
     createDistributedObject: newDistributed,
-    genSessionId: genSessionId
+    genSessionId: randomNum
 }
