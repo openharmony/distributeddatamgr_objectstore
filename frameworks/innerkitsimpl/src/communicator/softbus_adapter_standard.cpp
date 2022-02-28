@@ -583,9 +583,10 @@ void SoftBusAdapter::NotifySessionOpen(const string &deviceId, const int &state)
         lock_guard<mutex> lock(notifyFlagMutex_);
         if (notifyFlag_.count(deviceId) != 0) {
             notifyFlag_[deviceId] = true;
+            LOG_DEBUG("signal");
+            semaphore_->Signal(state);
         }
     }
-    semaphore_->Signal(state);
 }
 
 void AppDataListenerWrap::SetDataHandler(SoftBusAdapter *handler)

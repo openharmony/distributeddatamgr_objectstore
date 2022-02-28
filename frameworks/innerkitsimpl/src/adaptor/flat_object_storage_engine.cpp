@@ -291,10 +291,27 @@ uint32_t FlatObjectStorageEngine::SetStatusNotifier(std::shared_ptr<StatusWatche
         LOG_ERROR("FlatObjectStorageEngine::SetStatusNotifier kvStore has not init");
         return ERR_DB_NOT_INIT;
     }
-    auto databaseStatusNotifyCallback = [watcher](std::string userId, std::string appId, std::string storeId,
+    auto databaseStatusNotifyCallback = [this](std::string userId, std::string appId, std::string storeId,
                                             const std::string deviceId, bool onlineStatus) -> void {
-        watcher->OnChanged(
-            storeId, SoftBusAdapter::GetInstance()->ToNodeID(deviceId), onlineStatus ? "online" : "offline");
+        if (onlineStatus) {
+            auto onComplete = [this, storeId](const std::map<std::string, DistributedDB::DBStatus> &devices) {
+                LOG_INFO("complete");
+                for (auto item : devices) {
+                    LOG_INFO("%{public}s pull data result %{public}d in device %{public}s", storeId.c_str(), item.second,
+                             SoftBusAdapter::GetInstance()->ToNodeID(item.first).c_str());
+                }
+                if (statusWatcher_ != nullptr) {
+                    for (auto item : devices) {
+                        statusWatcher_->OnChanged(storeId, SoftBusAdapter::GetInstance()->ToNodeID(item.first),
+                                                  item.second == DistributedDB::OK ? "online" : "offline");
+                    }
+                }
+            };
+            SyncAllData(storeId, onComplete);
+        } else {
+            statusWatcher_->OnChanged(
+                storeId, SoftBusAdapter::GetInstance()->ToNodeID(deviceId), "offline");
+        }
     };
     storeManager_->SetStoreStatusNotifier(databaseStatusNotifyCallback);
     LOG_INFO("FlatObjectStorageEngine::SetStatusNotifier success");
