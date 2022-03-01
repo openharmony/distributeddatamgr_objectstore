@@ -126,8 +126,6 @@ SoftBusAdapter::SoftBusAdapter()
     sessionListener_.OnSessionClosed = AppDataListenerWrap::OnSessionClosed;
     sessionListener_.OnBytesReceived = AppDataListenerWrap::OnBytesReceived;
     sessionListener_.OnMessageReceived = AppDataListenerWrap::OnMessageReceived;
-
-    semaphore_ = std::make_unique<Semaphore>(0);
 }
 
 SoftBusAdapter::~SoftBusAdapter()
@@ -460,10 +458,6 @@ Status SoftBusAdapter::SendData(
     attr.dataType = TYPE_BYTES;
     LOG_DEBUG("[SendData] to %{public}s ,session:%{public}s, size:%{public}d",
         ToBeAnonymous(deviceId.deviceId).c_str(), pipeInfo.pipeId.c_str(), size);
-    {
-        lock_guard<mutex> lock(notifyFlagMutex_);
-        notifyFlag_[deviceId.deviceId] = false;
-    }
     int sessionId = OpenSession(
         pipeInfo.pipeId.c_str(), pipeInfo.pipeId.c_str(), ToNodeID(deviceId.deviceId).c_str(), "GROUP_ID", &attr);
     if (sessionId < 0) {
@@ -471,11 +465,7 @@ Status SoftBusAdapter::SendData(
             info.msgType, sessionId);
         return Status::CREATE_SESSION_ERROR;
     }
-    int state = WaitSessionOpen(deviceId.deviceId);
-    {
-        lock_guard<mutex> lock(notifyFlagMutex_);
-        notifyFlag_.erase(deviceId.deviceId);
-    }
+    int state = GetSessionStatus(sessionId);
     LOG_DEBUG("Waited for notification, state:%{public}d", state);
     if (state != SOFTBUS_OK) {
         LOG_ERROR("OpenSession callback result error");
@@ -490,6 +480,37 @@ Status SoftBusAdapter::SendData(
         return Status::ERROR;
     }
     return Status::SUCCESS;
+}
+
+int32_t SoftBusAdapter::GetSessionStatus(int32_t sessionId)
+{
+    auto semaphore = GetSemaphore(sessionId);
+    return semaphore->GetValue();
+}
+
+void SoftBusAdapter::OnSessionOpen(int32_t sessionId, int32_t status)
+{
+    auto semaphore = GetSemaphore(sessionId);
+    semaphore->SetValue(status);
+}
+
+void SoftBusAdapter::OnSessionClose(int32_t sessionId)
+{
+    lock_guard<mutex> lock(statusMutex_);
+    auto it = sessionsStatus_.find(sessionId);
+    if (it != sessionsStatus_.end()) {
+        it->second->Clear();
+        sessionsStatus_.erase(it);
+    }
+}
+
+std::shared_ptr<BlockData<int32_t>> SoftBusAdapter::GetSemaphore(int32_t sessionId)
+{
+    lock_guard<mutex> lock(statusMutex_);
+    if (sessionsStatus_.find(sessionId) == sessionsStatus_.end()) {
+        sessionsStatus_.emplace(sessionId, std::make_shared<BlockData<int32_t>>());
+    }
+    return sessionsStatus_[sessionId];
 }
 
 bool SoftBusAdapter::IsSameStartedOnPeer(
@@ -565,30 +586,6 @@ void SoftBusAdapter::NotifyDataListeners(
     LOG_WARN("no listener %{public}s.", pipeInfo.pipeId.c_str());
 }
 
-int SoftBusAdapter::WaitSessionOpen(const string &deviceId)
-{
-    {
-        lock_guard<mutex> lock(notifyFlagMutex_);
-        if (notifyFlag_.count(deviceId) != 0 && notifyFlag_[deviceId]) {
-            LOG_DEBUG("already notified return");
-            return 0;
-        }
-    }
-    return semaphore_->Wait();
-}
-
-void SoftBusAdapter::NotifySessionOpen(const string &deviceId, const int &state)
-{
-    {
-        lock_guard<mutex> lock(notifyFlagMutex_);
-        if (notifyFlag_.count(deviceId) != 0) {
-            notifyFlag_[deviceId] = true;
-            LOG_DEBUG("signal");
-            semaphore_->Signal(state);
-        }
-    }
-}
-
 void AppDataListenerWrap::SetDataHandler(SoftBusAdapter *handler)
 {
     LOG_INFO("begin");
@@ -601,6 +598,7 @@ int AppDataListenerWrap::OnSessionOpened(int sessionId, int result)
     char mySessionName[SESSION_NAME_SIZE_MAX] = "";
     char peerSessionName[SESSION_NAME_SIZE_MAX] = "";
     char peerDevId[DEVICE_ID_SIZE_MAX] = "";
+    softBusAdapter_->OnSessionOpen(sessionId, result);
     if (result != SOFTBUS_OK) {
         LOG_WARN("session %{public}d open failed, result:%{public}d.", sessionId, result);
         return result;
@@ -625,7 +623,6 @@ int AppDataListenerWrap::OnSessionOpened(int sessionId, int result)
               "peerSessionName:%{public}s, peerDevId:%{public}s",
         mySessionName, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
 
-    softBusAdapter_->NotifySessionOpen(peerUdid, result);
     if (strlen(peerSessionName) < 1) {
         softBusAdapter_->InsertSession(std::string(mySessionName) + peerUdid);
     } else {
@@ -641,6 +638,7 @@ void AppDataListenerWrap::OnSessionClosed(int sessionId)
     char peerSessionName[SESSION_NAME_SIZE_MAX] = "";
     char peerDevId[DEVICE_ID_SIZE_MAX] = "";
 
+    softBusAdapter_->OnSessionClose(sessionId);
     int ret = GetMySessionName(sessionId, mySessionName, sizeof(mySessionName));
     if (ret != SOFTBUS_OK) {
         LOG_WARN("get my session name failed, session id is %{public}d.", sessionId);
