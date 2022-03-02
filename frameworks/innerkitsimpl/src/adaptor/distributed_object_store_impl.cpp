@@ -50,7 +50,7 @@ DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &s
         LOG_ERROR("DistributedObjectStoreImpl::CreateObject store not opened!");
         return nullptr;
     }
-    int32_t status = flatObjectStore_->CreateObject(sessionId);
+    uint32_t status = flatObjectStore_->CreateObject(sessionId);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectStoreImpl::CreateObject CreateTable err %{public}d", status);
         return nullptr;

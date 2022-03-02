@@ -471,9 +471,10 @@ Status SoftBusAdapter::SendData(
         LOG_ERROR("OpenSession callback result error");
         return Status::CREATE_SESSION_ERROR;
     }
+    int key = sessionId;
     LOG_DEBUG("[SendBytes] start,sessionId is %{public}d, size is %{public}d, "
               "session type is %{public}d.",
-        sessionId, size, attr.dataType);
+        key, size, attr.dataType);
     int32_t ret = SendBytes(sessionId, (void *)ptr, size);
     if (ret != SOFTBUS_OK) {
         LOG_ERROR("[SendBytes] to %{public}d failed, ret:%{public}d.", sessionId, ret);
@@ -685,9 +686,10 @@ void AppDataListenerWrap::OnMessageReceived(int sessionId, const void *data, uns
         return;
     }
     std::string peerUdid = softBusAdapter_->GetUdidByNodeId(std::string(peerDevId));
+    int key = sessionId;
     LOG_DEBUG("[MessageReceived] sessionId:%{public}d, "
               "peerSessionName:%{public}s, peerDevId:%{public}s",
-        sessionId, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
+        key, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
     NotifyDataListeners(reinterpret_cast<const uint8_t *>(data), dataLen, peerUdid, { std::string(peerSessionName) });
 }
 
@@ -710,9 +712,10 @@ void AppDataListenerWrap::OnBytesReceived(int sessionId, const void *data, unsig
         return;
     }
     std::string peerUdid = softBusAdapter_->GetUdidByNodeId(std::string(peerDevId));
+    int key = sessionId;
     LOG_DEBUG("[BytesReceived] sessionId:%{public}d, peerSessionName:%{public}s, "
               "peerDevId:%{public}s",
-        sessionId, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
+        key, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
     NotifyDataListeners(reinterpret_cast<const uint8_t *>(data), dataLen, peerUdid, { std::string(peerSessionName) });
 }
 
