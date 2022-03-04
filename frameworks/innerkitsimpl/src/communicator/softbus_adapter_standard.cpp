@@ -562,7 +562,7 @@ int SoftBusAdapter::RemoveSessionServerAdapter(const std::string &sessionName) c
 void SoftBusAdapter::InsertSession(const std::string &sessionName)
 {
     lock_guard<mutex> lock(busSessionMutex_);
-    busSessionMap_.insert({ sessionName, true });
+    busSessionMap_.insert({sessionName, true});
 }
 
 void SoftBusAdapter::DeleteSession(const std::string &sessionName)
