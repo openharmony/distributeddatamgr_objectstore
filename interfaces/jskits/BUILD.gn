@@ -45,7 +45,6 @@ config("objectstore_config") {
   visibility = [ "//foundation/distributeddatamgr/objectstore:*" ]
 
   cflags = [
-    "-frtti",
     "-DHILOG_ENABLE",
   ]
 
