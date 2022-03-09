@@ -34,7 +34,7 @@
         "name": "distributeddataobject",
         "subsystem": "distributeddatamgr",
         "syscap": [
-            "SystemCapability.Data.DATA_DISTRIBUTEDDATAMGR"
+            "SystemCapability.DistributedDataManager.DataObject.DistributedObject"
         ],
         "features": [],
         "adapted_system_type": [
