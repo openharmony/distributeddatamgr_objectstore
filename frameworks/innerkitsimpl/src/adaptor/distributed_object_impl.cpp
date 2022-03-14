@@ -22,30 +22,30 @@ namespace OHOS::ObjectStore {
 DistributedObjectImpl::~DistributedObjectImpl()
 {
 }
-void PutNum(void *val, int32_t offset, int32_t valLen, Bytes &data)
+void PutNum(void *val, uint32_t offset, uint32_t valLen, Bytes &data)
 {
     uint32_t len = valLen + offset;
     if (len > sizeof(data.front()) * data.size()) {
         data.resize(len);
     }
 
-    for (int i = 0; i < valLen; i++) {
+    for (uint32_t i = 0; i < valLen; i++) {
         // 8 bit = 1 byte
         data[offset + i] = *(static_cast<uint64_t *>(val)) >> ((valLen - i - 1) * 8);
     }
 }
 
-uint32_t GetNum(Bytes &data, int32_t offset, void *val, int32_t valLen)
+uint32_t GetNum(Bytes &data, uint32_t offset, void *val, uint32_t valLen)
 {
     uint8_t *value = (uint8_t *)val;
-    int32_t len = offset + valLen;
-    int32_t dataLen = data.size();
+    uint32_t len = offset + valLen;
+    uint32_t dataLen = data.size();
     if (dataLen < len) {
         LOG_ERROR("DistributedObjectImpl:GetNum data.size() %{public}d, offset %{public}d, valLen %{public}d", dataLen,
             offset, valLen);
         return ERR_DATA_LEN;
     }
-    for (int32_t i = 0; i < valLen; i++) {
+    for (uint32_t i = 0; i < valLen; i++) {
         value[i] = data[len - 1 - i];
     }
     return SUCCESS;

@@ -15,10 +15,7 @@ import("//build/ohos.gni")
 config("objectstore_config") {
   visibility = [ "//foundation/distributeddatamgr/objectstore:*" ]
 
-  cflags = [
-    "-frtti",
-    "-DHILOG_ENABLE",
-  ]
+  cflags = [ "-DHILOG_ENABLE" ]
 
   include_dirs = [
     "../../frameworks/innerkitsimpl/include/adaptor",

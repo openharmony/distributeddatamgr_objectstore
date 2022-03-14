@@ -248,7 +248,6 @@ bool EventListener::Add(napi_env env, napi_value handler)
         handlers_ = temp;
     }
     napi_create_reference(env, handler, 1, &handlers_->callbackRef);
-    LOG_INFO("add %{public}p in  %{public}p", handler, handlers_->callbackRef);
     return true;
 }
 
@@ -271,6 +270,10 @@ bool ChangeEventListener::Add(napi_env env, napi_value handler)
 {
     if (!isWatched_ && object_ != nullptr) {
         std::shared_ptr<WatcherImpl> watcher = std::make_shared<WatcherImpl>(watcher_);
+        if (watcher == nullptr) {
+            LOG_ERROR("new %{public}s error", object_->GetSessionId().c_str());
+            return false;
+        }
         uint32_t ret = objectStore_->Watch(object_, watcher);
         if (ret != SUCCESS) {
             LOG_ERROR("Watch %{public}s error", object_->GetSessionId().c_str());
@@ -319,7 +322,7 @@ ChangeEventListener::ChangeEventListener(
 
 bool StatusEventListener::Add(napi_env env, napi_value handler)
 {
-    LOG_INFO("Add status watch %{public}s %{public}p", sessionId_.c_str(), handler);
+    LOG_INFO("Add status watch %{public}s", sessionId_.c_str());
     NotifierImpl::GetInstance()->AddWatcher(sessionId_, watcher_);
     return EventListener::Add(env, handler);
 }

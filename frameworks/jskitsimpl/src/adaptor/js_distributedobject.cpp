@@ -25,10 +25,9 @@
 
 namespace OHOS::ObjectStore {
 constexpr size_t KEY_SIZE = 64;
-static napi_ref *g_instance = nullptr;
 napi_value JSDistributedObject::JSConstructor(napi_env env, napi_callback_info info)
 {
-    LOG_ERROR("start");
+    LOG_INFO("start");
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, nullptr, 0, &thisVar, &data);
@@ -91,6 +90,7 @@ napi_value JSDistributedObject::JSPut(napi_env env, napi_callback_info info)
 
 napi_value JSDistributedObject::GetCons(napi_env env)
 {
+    static napi_ref *g_instance = nullptr;
     napi_value distributedObjectClass = nullptr;
     if (g_instance != nullptr) {
         napi_status status = napi_get_reference_value(env, *g_instance, &distributedObjectClass);
@@ -128,7 +128,7 @@ void JSDistributedObject::DoPut(
             break;
         }
         case napi_number: {
-            double putValue = false;
+            double putValue = 0;
             napi_status status = JSUtil::GetValue(env, value, putValue);
             CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
             wrapper->GetObject()->PutDouble(keyString, putValue);

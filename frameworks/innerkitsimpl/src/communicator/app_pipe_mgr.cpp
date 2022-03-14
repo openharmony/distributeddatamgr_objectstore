@@ -91,6 +91,10 @@ Status AppPipeMgr::Start(const PipeInfo &pipeInfo)
     }
     LOG_DEBUG("Start pipeInfo:%{public}s ", pipeInfo.pipeId.c_str());
     auto handler = std::make_shared<AppPipeHandler>(pipeInfo);
+    if (handler == nullptr) {
+        LOG_WARN("pipeInfo:%{public}s. new failed", pipeInfo.pipeId.c_str());
+        return Status::ILLEGAL_STATE;
+    }
     int ret = handler->CreateSessionServer(pipeInfo.pipeId);
     if (ret != 0) {
         LOG_WARN("Start pipeInfo:%{public}s, failed ret:%{public}d.", pipeInfo.pipeId.c_str(), ret);

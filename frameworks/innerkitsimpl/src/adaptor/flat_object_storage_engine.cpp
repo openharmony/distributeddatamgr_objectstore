@@ -331,11 +331,13 @@ uint32_t FlatObjectStorageEngine::SyncAllData(const std::string &sessionId,
         LOG_INFO("single device,no need sync");
         return ERR_SINGLE_DEVICE;
     }
+    LOG_INFO("start sync %{public}s", sessionId.c_str());
     DistributedDB::DBStatus status = kvstore->Sync(deviceIds, DistributedDB::SyncMode::SYNC_MODE_PULL_ONLY, onComplete);
     if (status != DistributedDB::DBStatus::OK) {
         LOG_ERROR("FlatObjectStorageEngine::UnRegisterObserver unRegister err %{public}d", status);
         return ERR_UNRIGSTER;
     }
+    LOG_INFO("end sync %{public}s", sessionId.c_str());
     return SUCCESS;
 }
 

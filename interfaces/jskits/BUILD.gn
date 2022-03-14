@@ -44,10 +44,7 @@ action("gen_distributed_data_object_abc") {
 config("objectstore_config") {
   visibility = [ "//foundation/distributeddatamgr/objectstore:*" ]
 
-  cflags = [
-    "-frtti",
-    "-DHILOG_ENABLE",
-  ]
+  cflags = [ "-DHILOG_ENABLE" ]
 
   include_dirs = [
     "../../frameworks/jskitsimpl/include/adaptor",

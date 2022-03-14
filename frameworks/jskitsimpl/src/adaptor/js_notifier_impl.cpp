@@ -30,6 +30,7 @@ std::shared_ptr<NotifierImpl> NotifierImpl::GetInstance()
             instance = std::make_shared<NotifierImpl>();
             if (instance == nullptr) {
                 LOG_ERROR("Failed to alloc NotifierImpl!");
+                return nullptr;
             }
             uint32_t ret = DistributedObjectStore::GetInstance()->SetStatusNotifier(instance);
             if (ret != SUCCESS) {

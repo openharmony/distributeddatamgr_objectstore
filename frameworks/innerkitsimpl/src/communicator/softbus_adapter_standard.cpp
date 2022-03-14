@@ -261,7 +261,7 @@ std::vector<DeviceInfo> SoftBusAdapter::GetDeviceList() const
         DeviceInfo deviceInfo = { udid, std::string(info[i].deviceName), std::to_string(info[i].deviceTypeId) };
         dis.push_back(deviceInfo);
     }
-    if (info != NULL) {
+    if (info != nullptr) {
         FreeNodeInfo(info);
     }
     return dis;
@@ -334,7 +334,7 @@ std::vector<DeviceInfo> SoftBusAdapter::GetRemoteNodesBasicInfo() const
         dis.push_back(
             { std::string(info[i].networkId), std::string(info[i].deviceName), std::to_string(info[i].deviceTypeId) });
     }
-    if (info != NULL) {
+    if (info != nullptr) {
         FreeNodeInfo(info);
     }
     return dis;
@@ -396,7 +396,7 @@ std::string SoftBusAdapter::ToNodeID(const std::string &nodeId) const
             }
         }
     }
-    if (info != NULL) {
+    if (info != nullptr) {
         FreeNodeInfo(info);
     }
     return networkId;
@@ -471,9 +471,10 @@ Status SoftBusAdapter::SendData(
         LOG_ERROR("OpenSession callback result error");
         return Status::CREATE_SESSION_ERROR;
     }
+    int key = sessionId;
     LOG_DEBUG("[SendBytes] start,sessionId is %{public}d, size is %{public}d, "
               "session type is %{public}d.",
-        sessionId, size, attr.dataType);
+        key, size, attr.dataType);
     int32_t ret = SendBytes(sessionId, (void *)ptr, size);
     if (ret != SOFTBUS_OK) {
         LOG_ERROR("[SendBytes] to %{public}d failed, ret:%{public}d.", sessionId, ret);
@@ -561,7 +562,7 @@ int SoftBusAdapter::RemoveSessionServerAdapter(const std::string &sessionName) c
 void SoftBusAdapter::InsertSession(const std::string &sessionName)
 {
     lock_guard<mutex> lock(busSessionMutex_);
-    busSessionMap_.insert({ sessionName, true });
+    busSessionMap_.insert({sessionName, true});
 }
 
 void SoftBusAdapter::DeleteSession(const std::string &sessionName)
@@ -685,9 +686,10 @@ void AppDataListenerWrap::OnMessageReceived(int sessionId, const void *data, uns
         return;
     }
     std::string peerUdid = softBusAdapter_->GetUdidByNodeId(std::string(peerDevId));
+    int key = sessionId;
     LOG_DEBUG("[MessageReceived] sessionId:%{public}d, "
               "peerSessionName:%{public}s, peerDevId:%{public}s",
-        sessionId, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
+        key, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
     NotifyDataListeners(reinterpret_cast<const uint8_t *>(data), dataLen, peerUdid, { std::string(peerSessionName) });
 }
 
@@ -710,9 +712,10 @@ void AppDataListenerWrap::OnBytesReceived(int sessionId, const void *data, unsig
         return;
     }
     std::string peerUdid = softBusAdapter_->GetUdidByNodeId(std::string(peerDevId));
+    int key = sessionId;
     LOG_DEBUG("[BytesReceived] sessionId:%{public}d, peerSessionName:%{public}s, "
               "peerDevId:%{public}s",
-        sessionId, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
+        key, peerSessionName, SoftBusAdapter::ToBeAnonymous(peerUdid).c_str());
     NotifyDataListeners(reinterpret_cast<const uint8_t *>(data), dataLen, peerUdid, { std::string(peerSessionName) });
 }
 

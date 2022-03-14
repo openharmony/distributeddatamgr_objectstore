@@ -30,10 +30,11 @@ namespace OHOS::ObjectStore {
 constexpr size_t TYPE_SIZE = 10;
 static std::map<std::string, std::list<napi_ref>> g_statusCallBacks;
 static std::map<std::string, std::list<napi_ref>> g_changeCallBacks;
+
 void JSDistributedObjectStore::AddCallback(napi_env env, std::map<std::string, std::list<napi_ref>> &callbacks,
     const std::string &objectId, napi_value callback)
 {
-    LOG_INFO("add callback %{public}s %{public}p", objectId.c_str(), callback);
+    LOG_INFO("add callback %{public}s", objectId.c_str());
     napi_ref ref = nullptr;
     napi_status status = napi_create_reference(env, callback, 1, &ref);
     CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
@@ -49,7 +50,7 @@ void JSDistributedObjectStore::AddCallback(napi_env env, std::map<std::string, s
 void JSDistributedObjectStore::DelCallback(napi_env env, std::map<std::string, std::list<napi_ref>> &callbacks,
     const std::string &sessionId, napi_value callback)
 {
-    LOG_INFO("del callback %{public}s %{public}p", sessionId.c_str(), callback);
+    LOG_INFO("del callback %{public}s", sessionId.c_str());
     napi_status status;
     if (callback == nullptr) {
         if (callbacks.count(sessionId) != 0) {
@@ -249,7 +250,7 @@ napi_value JSDistributedObjectStore::JSOff(napi_env env, napi_callback_info info
         LOG_INFO("delete all");
         wrapper->DeleteWatch(env, type);
     } else {
-        LOG_INFO("delete %{public}p", argv[2]);
+        LOG_INFO("delete");
         wrapper->DeleteWatch(env, type, argv[2]);
     }
 
@@ -376,11 +377,6 @@ napi_value JSDistributedObjectStore::JSDeleteCallback(napi_env env, napi_callbac
     status = JSUtil::GetValue(env, argv[1], objectId);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
 
-    napi_valuetype callbackType = napi_undefined;
-    status = napi_typeof(env, argv[2], &callbackType);
-    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
-    ASSERT_MATCH_ELSE_RETURN_NULL(callbackType == napi_function);
-
     if (argc == 2) {
         if (!strcmp(CHANGE, type)) {
             DelCallback(env, g_changeCallBacks, objectId);
@@ -388,6 +384,10 @@ napi_value JSDistributedObjectStore::JSDeleteCallback(napi_env env, napi_callbac
             DelCallback(env, g_statusCallBacks, objectId);
         }
     } else {
+        napi_valuetype callbackType = napi_undefined;
+        status = napi_typeof(env, argv[2], &callbackType);
+        CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
+        ASSERT_MATCH_ELSE_RETURN_NULL(callbackType == napi_function);
         if (!strcmp(CHANGE, type)) {
             DelCallback(env, g_changeCallBacks, objectId, argv[2]);
         } else if (!strcmp(STATUS, type)) {

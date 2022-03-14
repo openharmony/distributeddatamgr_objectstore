@@ -1,7 +1,7 @@
 {
     "name": "@ohos/distributeddatamgr_objectstore", 
     "version": "",                              
-    "description": "The distributed data object management framework is an object-oriented in-memory data managment framework",  
+    "description": "The distributed data object management framework is an object-oriented in-memory data management framework",
     "homePage": "https://gitee.com/openharmony",
     "license": "Apache V2",
     "repository": "https://gitee.com/openharmony/distributeddatamgr_objectstore ",
@@ -34,7 +34,7 @@
         "name": "distributeddataobject",
         "subsystem": "distributeddatamgr",
         "syscap": [
-            "SystemCapability.Data.DATA_DISTRIBUTEDDATAMGR"
+            "SystemCapability.DistributedDataManager.DataObject.DistributedObject"
         ],
         "features": [],
         "adapted_system_type": [
