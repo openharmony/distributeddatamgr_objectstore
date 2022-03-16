@@ -110,7 +110,7 @@ ohos_shared_library("distributeddataobject") {
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb:distributeddb",
     "//foundation/distributeddatamgr/objectstore/interfaces/innerkits:distributeddataobject_impl",
-    "//third_party/libuv:uv_static",
+    "//third_party/libuv:uv",
     "//utils/native/base:utils",
     "//utils/native/base:utilsecurec",
   ]
