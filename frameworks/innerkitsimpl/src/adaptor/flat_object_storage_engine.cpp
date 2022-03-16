@@ -293,9 +293,13 @@ uint32_t FlatObjectStorageEngine::SetStatusNotifier(std::shared_ptr<StatusWatche
     }
     auto databaseStatusNotifyCallback = [this](std::string userId, std::string appId, std::string storeId,
                                             const std::string deviceId, bool onlineStatus) -> void {
+        LOG_INFO("complete");
+        if (statusWatcher_ == nullptr) {
+            LOG_INFO("FlatObjectStorageEngine::statusWatcher_ null");
+            return;
+        }
         if (onlineStatus) {
             auto onComplete = [this, storeId](const std::map<std::string, DistributedDB::DBStatus> &devices) {
-                LOG_INFO("complete");
                 for (auto item : devices) {
                     LOG_INFO("%{public}s pull data result %{public}d in device %{public}s", storeId.c_str(),
                         item.second, SoftBusAdapter::GetInstance()->ToNodeID(item.first).c_str());
@@ -321,6 +325,12 @@ uint32_t FlatObjectStorageEngine::SetStatusNotifier(std::shared_ptr<StatusWatche
 uint32_t FlatObjectStorageEngine::SyncAllData(const std::string &sessionId,
     const std::function<void(const std::map<std::string, DistributedDB::DBStatus> &)> &onComplete)
 {
+    LOG_INFO("start");
+    std::unique_lock<std::shared_mutex> lock(operationMutex_);
+    if (delegates_.count(sessionId) == 0) {
+        LOG_ERROR("FlatObjectStorageEngine::SyncAllData %{public}s already deleted", sessionId.c_str());
+        return ERR_DB_NOT_EXIST;
+    }
     std::vector<DeviceInfo> devices = SoftBusAdapter::GetInstance()->GetDeviceList();
     std::vector<std::string> deviceIds;
     DistributedDB::KvStoreNbDelegate *kvstore = delegates_.at(sessionId);
