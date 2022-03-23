@@ -64,14 +64,12 @@ var g_object = distributedObject.createDistributedObject({name:undefined, age:un
 
 ```js
 g_object.setSessionId(distributedObject.genSessionId());
-
-//将生成的g_object.__sessionId通过Intent传到对端设备
 ```
 
 被拉起方
 
 ```js
-//获取Intent中的sessionId
+//sessionId与发起方的__sessionId一致
 g_object.setSessionId(sessionId);
 ```
 
