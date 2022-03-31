@@ -160,14 +160,12 @@ function leaveSession(obj) {
         return;
     }
     Object.keys(obj).forEach(key => {
-        if (key != "_napiwrapper") {
-            Object.defineProperty(obj, key, {
-                value: obj[key],
-                configurable: true,
-                writable: true,
-                enumerable: true,
-            });
-        }
+        Object.defineProperty(obj, key, {
+            value: obj[key],
+            configurable: true,
+            writable: true,
+            enumerable: true,
+        });
     });
     // disconnect,delete object
     distributedObject.destroyObjectSync(obj);
