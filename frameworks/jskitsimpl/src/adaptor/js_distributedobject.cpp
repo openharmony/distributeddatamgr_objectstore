@@ -90,10 +90,10 @@ napi_value JSDistributedObject::JSPut(napi_env env, napi_callback_info info)
 
 napi_value JSDistributedObject::GetCons(napi_env env)
 {
-    static napi_ref *g_instance = nullptr;
+    static thread_local napi_ref g_instance = nullptr;
     napi_value distributedObjectClass = nullptr;
     if (g_instance != nullptr) {
-        napi_status status = napi_get_reference_value(env, *g_instance, &distributedObjectClass);
+        napi_status status = napi_get_reference_value(env, g_instance, &distributedObjectClass);
         CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
         return distributedObjectClass;
     }
@@ -108,8 +108,7 @@ napi_value JSDistributedObject::GetCons(napi_env env)
         distributedObjectDesc, &distributedObjectClass);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     if (g_instance == nullptr) {
-        g_instance = new napi_ref;
-        status = napi_create_reference(env, distributedObjectClass, 1, g_instance);
+        status = napi_create_reference(env, distributedObjectClass, 1, &g_instance);
         CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     }
     return distributedObjectClass;
