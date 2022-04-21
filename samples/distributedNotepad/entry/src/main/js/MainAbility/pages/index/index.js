@@ -60,6 +60,7 @@ export default {
     clear: function () {
         // 触发界面刷新
         this.dataModel.documentList = [];
+        this.dataModel.distributedObject.documentSize = 0;
         distr.g_dataModel.clear();
     },
     detail: function (msg) {
