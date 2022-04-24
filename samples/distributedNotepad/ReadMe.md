@@ -1,4 +1,4 @@
-# OpenHarmony 3.1 Beta样例：使用分布式对象创建备忘录
+# Sample：使用分布式对象创建备忘录
 
 ![输入图片说明](Pictures/展示图.png)
 
@@ -242,6 +242,8 @@ changeCallback(sessionId, changeData) {
 		this.dataModel.distributedObject.documentSize = size;
 		}
 	});
+	// 要在callback里刷新界面，则需要将正确的this绑定给callback
+	this.dataModel.distributedObject.on("change", this.changeCallback.bind(this));
  }
 ```
 

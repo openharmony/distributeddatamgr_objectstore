@@ -33,6 +33,8 @@ export default {
                 this.dataModel.distributedObject.documentSize = size;
             }
         });
+		// 要在callback里刷新界面，则需要将正确的this绑定给callback
+        this.dataModel.distributedObject.on("change", this.changeCallback.bind(this));
     },
     onInit() {
         console.info("objectstore in index page ");
