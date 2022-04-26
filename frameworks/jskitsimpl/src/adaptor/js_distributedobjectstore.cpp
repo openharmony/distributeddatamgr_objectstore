@@ -94,7 +94,10 @@ napi_value JSDistributedObjectStore::NewDistributedObject(
     status = napi_wrap(
         env, result, objectWrapper,
         [](napi_env env, void *data, void *hint) {
+            LOG_INFO("start delete object");
             auto objectWrapper = (JSObjectWrapper *)data;
+            DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env))
+                ->DeleteObject(objectWrapper->GetObject()->GetSessionId());
             if (objectWrapper != nullptr) {
                 delete objectWrapper;
             }
