@@ -19,6 +19,7 @@
 
 #include "ability_context.h"
 #include "accesstoken_kit.h"
+#include "application_context.h"
 #include "distributed_objectstore.h"
 #include "js_common.h"
 #include "js_distributedobject.h"
