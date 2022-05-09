@@ -80,10 +80,8 @@ export default class DistributedDataModel {
         if (this.distributedObject.__sessionId == undefined) {
             grantPermission()
             this.distributedObject.setSessionId("123456")
-            //  prompt.showToast({message:this.$t("strings.joinSuccess")});
-        } else {
-            // prompt.showToast({message:this.$t("strings.repeatJoin")});
-        }
+        } else {       
+          }
     }
 
     update(index, title, content) {
