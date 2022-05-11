@@ -85,7 +85,7 @@ export default class DistributedDataModel {
 
     update(index, title, content) {
         console.info("doUpdate " + title + index);
-		this.documentList = this.distributedObject.documentList;
+        this.documentList = this.distributedObject.documentList;
         this.documentList[index] = {
             index: index, title: title, content: content
         };
