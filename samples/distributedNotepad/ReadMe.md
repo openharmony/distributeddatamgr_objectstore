@@ -2,7 +2,7 @@
 
  ## **分布式对象**
 
-分布式数据对象管理框架是一款面向对象的内存数据管理框架，向应用开发者提供内存对象的创建、查询、删除、修改、订阅等基本数据对象的管理能力，同时具备分布式能力，满足超级终端场景下，相同应用多设备间的数据对象协同需求。 
+分布式数据对象管理框架，是一款面向对象的内存数据管理框架。本框架向应用开发者提供内存对象的创建、查询、删除、修改、订阅等基本数据对象的管理能力，同时具备分布式能力，能够满足在超级终端场景下，相同应用可在多台设备间进行数据对象协同的功能需求。 
 
  ## **备忘录应用**
 
@@ -20,7 +20,7 @@
 
  ## **开发步骤**
 
-分布式数据对象 要求多个设备在同一可信组网中；
+分布式数据对象 要求多个设备在同一可信组网中。
 
  ### 1）导入模块
 
@@ -75,7 +75,7 @@ export default class DistributedDataModel {
 function grantPermission() {
 	let context = featureAbility.getContext(); 
     // 向系统请求权限,用户弹框显示
-    // 使用config文件中申明的DATASYNC权限
+    // 使用config文件中声明的DATASYNC权限
     // 请求代码可自定义，同时也可自定义异步回调函数
     context.requestPermissionsFromUser(['ohos.permission.DISTRIBUTED_DATASYNC'], 666, function (result) {
        ...
@@ -109,8 +109,8 @@ setCallback(callback) {
 		this.distributedObject.off("change", this.#callback);
 	}   
 	this.#callback = callback;       
-	// 监听对象的变更
-	// type 是'change' 表示数据修改监听
+	// 监听对象的变更，其入参为 type和callback
+	// type 是'change'时，表示数据修改监听
 	// callback是变更时触发的回调，callback入参为sessionId和changeData，sessionId标识变更对象，changeData为对象变更的属性
 	this.distributedObject.on("change", this.#callback);
 }
@@ -128,8 +128,9 @@ setStatusCallback(callback) {
 		this.distributedObject.off("status", this.#statusCallback);
 	}
 	this.#statusCallback = callback;
-	//type 是'status'，表示上下先状态更改监听
-	//callback是变更时触发的回调，其回调参数sessionId标识变更对象的sessionId，networkId标识对象设备的networkId，status标识对象为'online'(上线)或'offline'(下线)的状态
+	// 监听对象状态的变更，其入参为 type和callback
+	// type 是'status'时，表示上下先状态更改监听
+	// callback是变更时触发的回调，其回调参数sessionId标识变更对象的sessionId，networkId标识对象设备的networkId，status标识对象为'online'(上线)或'offline'(下线)的状态
 	this.distributedObject.on("status", this.#statusCallback);
 }
 ```
@@ -161,12 +162,12 @@ changeCallback(sessionId, changeData) {
 ```
 
 - 在页面初始化函数中设定监听分布式对象上下线状态回调，进行设备组网检测，并亮灯提示。
-- 在页面初始化函数中设定监听分布式对象的数据变更回调，监听对端设备的的数据变更。
+- 在页面初始化函数中设定监听分布式对象的数据变更回调，监听对端设备的数据变更。
 
 ```js
 onInit() {
-	// 监听对端设备的的数据变更
-	// 发起发要在changeCallback里刷新界面，则需要将正确的this绑定给changeCallback
+	// 监听对端设备的数据变更
+	// 发起方要在changeCallback里刷新界面，则需要将正确的this绑定给changeCallback
 	distr.g_dataModel.setCallback(this.changeCallback.bind(this));
 	// 监听分布式对象的上下线状态
 	distr.g_dataModel.setStatusCallback((sessionId, networkId, status) => {  
@@ -183,7 +184,7 @@ onInit() {
 
  ## **应用场景**
 
-- 当用户进行“新增”数据操作时，获取页面的新添加的数据后，将其转存储于分布式对象的documentList属性中，并依据新的数据容量重新赋值documentSize属性。
+- 当用户进行“添加”数据操作时，获取页面的新添加的数据后，将其转存储于分布式对象的documentList属性中，并依据新的数据容量重新赋值documentSize属性。
 
 ```js
 doAdd: function () {
