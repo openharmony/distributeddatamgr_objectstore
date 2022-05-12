@@ -54,7 +54,7 @@ ohos_shared_library("distributeddataobject_impl") {
   deps = [
     "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb:distributeddb",
     "//third_party/bounds_checking_function:libsec_static",
-    "//third_party/libuv:uv_static",
+    "//third_party/libuv:uv",
     "//utils/native/base:utils",
   ]
   external_deps = [
