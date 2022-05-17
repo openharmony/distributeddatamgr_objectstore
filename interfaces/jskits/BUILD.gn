@@ -107,7 +107,6 @@ ohos_shared_library("distributeddataobject") {
     ":distributed_data_object_abc",
     ":distributed_data_object_js",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb:distributeddb",
     "//foundation/distributeddatamgr/objectstore/interfaces/innerkits:distributeddataobject_impl",
     "//third_party/bounds_checking_function:libsec_static",
