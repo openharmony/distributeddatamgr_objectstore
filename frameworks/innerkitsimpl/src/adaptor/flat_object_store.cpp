@@ -15,10 +15,10 @@
 
 #include "flat_object_store.h"
 
+#include "client_adaptor.h"
 #include "distributed_objectstore_impl.h"
 #include "logger.h"
 #include "object_callback.h"
-#include "object_client_adaptor.h"
 #include "object_service_proxy.h"
 #include "objectstore_errors.h"
 #include "softbus_adapter.h"
@@ -202,6 +202,7 @@ uint32_t CacheManager::Save(const std::string &bundleName, const std::string &se
             }
             condition_.notify_all();
         });
+    // wait for operation callback, max wait time is 10s
     condition_.wait_for(lck, std::chrono::seconds(10), [this]() { return !isProcessing_; });
     isProcessing_ = false;
     return status;
@@ -223,6 +224,7 @@ uint32_t CacheManager::RevokeSave(const std::string &bundleName, const std::stri
         condition_.notify_all();
     };
     RevokeSaveObject(bundleName, sessionId, callback);
+    // wait for operation callback, max wait time is 10s
     condition_.wait_for(lck, std::chrono::seconds(10), [this]() { return !isProcessing_; });
     isProcessing_ = false;
     return status;

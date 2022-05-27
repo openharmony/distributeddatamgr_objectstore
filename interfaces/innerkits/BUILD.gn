@@ -40,7 +40,7 @@ ohos_shared_library("distributeddataobject_impl") {
     "../../frameworks/innerkitsimpl/src/adaptor/flat_object_storage_engine.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/flat_object_store.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/object_callback.cpp",
-    "../../frameworks/innerkitsimpl/src/adaptor/object_client_adaptor.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/client_adaptor.cpp",
     "../../frameworks/innerkitsimpl/src/communicator/app_device_handler.cpp",
     "../../frameworks/innerkitsimpl/src/communicator/app_pipe_handler.cpp",
     "../../frameworks/innerkitsimpl/src/communicator/app_pipe_mgr.cpp",

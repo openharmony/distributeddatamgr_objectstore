@@ -19,17 +19,18 @@
 #include <map>
 #include <string>
 #include <vector>
+
 #include "iobject_callback.h"
 namespace OHOS::ObjectStore {
 class ObjectService {
 public:
     virtual int32_t ObjectStoreSave(const std::string &bundleName, const std::string &sessionId,
-                                   const std::vector<std::string> &deviceList, const std::map<std::string, std::vector<uint8_t>> &data,
-                                   sptr<IObjectSaveCallback> callback) = 0;
+        const std::vector<std::string> &deviceList, const std::map<std::string, std::vector<uint8_t>> &data,
+        sptr<IObjectSaveCallback> callback) = 0;
     virtual int32_t ObjectStoreRetrieve(
         const std::string &bundleName, const std::string &sessionId, sptr<IObjectRetrieveCallback> callback) = 0;
     virtual int32_t ObjectStoreRevokeSave(
         const std::string &bundleName, const std::string &sessionId, sptr<IObjectRevokeSaveCallback> callback) = 0;
 };
-} // namespace OHOS::DistributedRdb
+} // namespace OHOS::ObjectStore
 #endif
