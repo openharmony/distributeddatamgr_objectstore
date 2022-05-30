@@ -39,6 +39,8 @@ public:
     virtual uint32_t GetString(const std::string &key, std::string &value) = 0;
     virtual uint32_t GetComplex(const std::string &key, std::vector<uint8_t> &value) = 0;
     virtual uint32_t GetType(const std::string &key, Type &type) = 0;
+    virtual uint32_t Save(const std::string &deviceId) = 0;
+    virtual uint32_t RevokeSave() = 0;
     virtual std::string &GetSessionId() = 0;
 };
 

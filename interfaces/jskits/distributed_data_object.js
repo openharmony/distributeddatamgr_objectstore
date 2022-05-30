@@ -15,8 +15,10 @@
  
 const distributedObject = requireInternal("data.distributedDataObject");
 const SESSION_ID = "__sessionId";
+const VERSION = "__version";
 const COMPLEX_TYPE = "[COMPLEX]";
 const STRING_TYPE = "[STRING]";
+const JS_ERROR = 1;
 
 class Distributed {
     constructor(obj) {
@@ -29,6 +31,7 @@ class Distributed {
                     return this.__proxy[key];
                 },
                 set: function (newValue) {
+                    this[VERSION]++;
                     this.__proxy[key] = newValue;
                 }
             });
@@ -44,6 +47,7 @@ class Distributed {
             }
         });
         this.__objectId = randomNum();
+        this[VERSION] = 0;
         console.info("constructor success ");
     }
 
@@ -75,8 +79,25 @@ class Distributed {
         distributedObject.deleteCallback(type, this.__objectId, callback);
     }
 
+    save(deviceId, callback) {
+        if (this.__proxy[SESSION_ID] == null || this.__proxy[SESSION_ID] == "") {
+            console.info("not join a session, can not do save");
+            return JS_ERROR;
+        }
+        return this.__proxy.save(deviceId, this[VERSION], callback);
+    }
+
+    revokeSave(callback) {
+        if (this.__proxy[SESSION_ID] == null || this.__proxy[SESSION_ID] == "") {
+            console.info("not join a session, can not do revoke save");
+            return JS_ERROR;
+        }
+        return this.__proxy.revokeSave(callback);
+    }
+
     __proxy;
     __objectId;
+    __version;
 }
 
 function randomNum() {

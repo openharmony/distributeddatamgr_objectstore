@@ -34,6 +34,8 @@ public:
     uint32_t PutComplex(const std::string &key, const std::vector<uint8_t> &value) override;
     uint32_t GetComplex(const std::string &key, std::vector<uint8_t> &value) override;
     std::string &GetSessionId() override;
+    uint32_t Save(const std::string &deviceId) override;
+    uint32_t RevokeSave() override;
     uint32_t GetType(const std::string &key, Type &type) override;
 
 private:

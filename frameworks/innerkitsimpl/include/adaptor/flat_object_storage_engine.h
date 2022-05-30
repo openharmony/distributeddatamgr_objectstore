@@ -18,7 +18,7 @@
 
 #include <cstdint>
 #include <map>
-#include <shared_mutex>
+#include <mutex>
 #include <vector>
 
 #include "kv_store_delegate_manager.h"
@@ -35,16 +35,18 @@ public:
     uint32_t CreateTable(const std::string &key) override;
     uint32_t GetTable(const std::string &key, std::map<std::string, Value> &result) override;
     uint32_t UpdateItem(const std::string &key, const std::string &itemKey, Value &value) override;
+    uint32_t UpdateItems(const std::string &key, const std::map<std::string, std::vector<uint8_t>> &data) override;
     uint32_t GetItem(const std::string &key, const std::string &itemKey, Value &value) override;
+    uint32_t GetItems(const std::string &key, std::map<std::string, std::vector<uint8_t>> &data) override;
     uint32_t RegisterObserver(const std::string &key, std::shared_ptr<TableWatcher> watcher) override;
     uint32_t UnRegisterObserver(const std::string &key) override;
     uint32_t SetStatusNotifier(std::shared_ptr<StatusWatcher> watcher) override;
-    uint32_t SyncAllData(const std::string &sessionId,
+    uint32_t SyncAllData(const std::string &sessionId, const std::vector<std::string> &deviceIds,
         const std::function<void(const std::map<std::string, DistributedDB::DBStatus> &)> &onComplete);
     bool isOpened_ = false;
 
 private:
-    std::shared_mutex operationMutex_{};
+    std::mutex operationMutex_{};
     std::shared_ptr<DistributedDB::KvStoreDelegateManager> storeManager_;
     std::map<std::string, DistributedDB::KvStoreNbDelegate *> delegates_;
     std::map<std::string, std::shared_ptr<TableWatcher>> observerMap_;

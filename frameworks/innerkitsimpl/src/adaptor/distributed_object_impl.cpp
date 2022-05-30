@@ -22,6 +22,7 @@ namespace OHOS::ObjectStore {
 DistributedObjectImpl::~DistributedObjectImpl()
 {
 }
+
 void PutNum(void *val, uint32_t offset, uint32_t valLen, Bytes &data)
 {
     uint32_t len = valLen + offset;
@@ -154,6 +155,7 @@ uint32_t DistributedObjectImpl::GetType(const std::string &key, Type &type)
     }
     return SUCCESS;
 }
+
 std::string &DistributedObjectImpl::GetSessionId()
 {
     return sessionId_;
@@ -163,6 +165,7 @@ DistributedObjectImpl::DistributedObjectImpl(const std::string &sessionId, FlatO
     : sessionId_(sessionId), flatObjectStore_(flatObjectStore)
 {
 }
+
 uint32_t DistributedObjectImpl::PutComplex(const std::string &key, const std::vector<uint8_t> &value)
 {
     Bytes data;
@@ -175,11 +178,32 @@ uint32_t DistributedObjectImpl::PutComplex(const std::string &key, const std::ve
     }
     return status;
 }
+
 uint32_t DistributedObjectImpl::GetComplex(const std::string &key, std::vector<uint8_t> &value)
 {
     uint32_t status = flatObjectStore_->Get(sessionId_, FIELDS_PREFIX + key, value);
     if (status != SUCCESS) {
         LOG_ERROR("DistributedObjectImpl:GetString field not exist. %{public}d %{public}s", status, key.c_str());
+        return status;
+    }
+    return status;
+}
+
+uint32_t DistributedObjectImpl::Save(const std::string &deviceId)
+{
+    uint32_t status = flatObjectStore_->Save(sessionId_, deviceId);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:Save failed. status = %{public}d", status);
+        return status;
+    }
+    return status;
+}
+
+uint32_t DistributedObjectImpl::RevokeSave()
+{
+    uint32_t status = flatObjectStore_->RevokeSave(sessionId_);
+    if (status != SUCCESS) {
+        LOG_ERROR("DistributedObjectImpl:RevokeSave failed. status = %{public}d", status);
         return status;
     }
     return status;

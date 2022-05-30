@@ -224,7 +224,6 @@ void WatcherProxy::OnChanged(const std::string &sessionid, const std::vector<std
 
 DistributedObjectStore *DistributedObjectStore::GetInstance(const std::string &bundleName)
 {
-    static char instMemory[sizeof(DistributedObjectStoreImpl)];
     static std::mutex instLock_;
     static DistributedObjectStore *instPtr = nullptr;
     if (instPtr == nullptr) {
@@ -238,7 +237,7 @@ DistributedObjectStore *DistributedObjectStore::GetInstance(const std::string &b
             }
             // Use instMemory to make sure this singleton not free before other object.
             // This operation needn't to malloc memory, we needn't to check nullptr.
-            instPtr = new (instMemory) DistributedObjectStoreImpl(flatObjectStore);
+            instPtr = new DistributedObjectStoreImpl(flatObjectStore);
         }
     }
     return instPtr;

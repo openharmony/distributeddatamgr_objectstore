@@ -18,9 +18,9 @@
 #include <cstring>
 
 #include "js_common.h"
-#include "js_notifier_impl.h"
 #include "js_util.h"
 #include "logger.h"
+#include "notifier_impl.h"
 #include "objectstore_errors.h"
 
 namespace OHOS::ObjectStore {

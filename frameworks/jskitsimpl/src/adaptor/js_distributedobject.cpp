@@ -21,6 +21,7 @@
 #include "js_object_wrapper.h"
 #include "js_util.h"
 #include "logger.h"
+#include "napi_queue.h"
 #include "objectstore_errors.h"
 
 namespace OHOS::ObjectStore {
@@ -101,6 +102,8 @@ napi_value JSDistributedObject::GetCons(napi_env env)
     napi_property_descriptor distributedObjectDesc[] = {
         DECLARE_NAPI_FUNCTION("put", JSDistributedObject::JSPut),
         DECLARE_NAPI_FUNCTION("get", JSDistributedObject::JSGet),
+        DECLARE_NAPI_FUNCTION("save", JSDistributedObject::JSSave),
+        DECLARE_NAPI_FUNCTION("revokeSave", JSDistributedObject::JSRevokeSave),
     };
 
     napi_status status = napi_define_class(env, distributedObjectName, strlen(distributedObjectName),
@@ -200,5 +203,152 @@ void JSDistributedObject::DoGet(napi_env env, JSObjectWrapper *wrapper, char *ke
             break;
         }
     }
+}
+
+// save(deviceId: string, version: number, callback?:AsyncCallback<SaveSuccessResponse>): void;
+// save(deviceId: string, version: number): Promise<SaveSuccessResponse>;
+napi_value JSDistributedObject::JSSave(napi_env env, napi_callback_info info)
+{
+    LOG_DEBUG("JSSave()");
+    struct SaveContext : public ContextBase {
+        double version;
+        std::string deviceId;
+        DistributedObject *object;
+    };
+    auto ctxt = std::make_shared<SaveContext>();
+    std::function<void(size_t argc, napi_value * argv)> getCbOpe = [env, ctxt](size_t argc, napi_value *argv) {
+        // required 1 arguments :: <key>
+        CHECK_ARGS_RETURN_VOID(ctxt, argc >= 2, "invalid arguments!");
+        ctxt->status = JSUtil::GetValue(env, argv[0], ctxt->deviceId);
+        CHECK_STATUS_RETURN_VOID(ctxt, "invalid arg[0], i.e. invalid deviceId!");
+        ctxt->status = JSUtil::GetValue(env, argv[1], ctxt->version);
+        CHECK_STATUS_RETURN_VOID(ctxt, "invalid arg[1], i.e. invalid version!");
+        JSObjectWrapper *wrapper = nullptr;
+        napi_status status = napi_unwrap(env, ctxt->self, (void **)&wrapper);
+        CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
+        ASSERT_MATCH_ELSE_RETURN_VOID(wrapper != nullptr);
+        ctxt->object = wrapper->GetObject();
+    };
+    ctxt->GetCbInfo(env, info, getCbOpe);
+    auto output = [env, ctxt](napi_value &result) {
+        if (ctxt->status == napi_ok) {
+            ctxt->status = napi_new_instance(env,
+                JSDistributedObject::GetSaveResultCons(env, ctxt->object->GetSessionId(),
+                    ctxt->version, ctxt->deviceId),
+                0, nullptr, &result);
+            CHECK_STATUS_RETURN_VOID(ctxt, "output failed!");
+        }
+    };
+    return NapiQueue::AsyncWork(
+        env, ctxt, std::string(__FUNCTION__),
+        [ctxt]() {
+            LOG_INFO("start");
+            if (ctxt->object == nullptr) {
+                LOG_ERROR("object is null");
+                ctxt->status = napi_invalid_arg;
+                ctxt->error = std::string("object is null");
+                return;
+            }
+            uint32_t status = ctxt->object->Save(ctxt->deviceId);
+            if (status != SUCCESS) {
+                LOG_ERROR("Save failed, status = %{public}d", status);
+                ctxt->status = napi_invalid_arg;
+                ctxt->error = std::string("operation failed");
+                return;
+            }
+            ctxt->status = napi_ok;
+            LOG_INFO("end");
+        },
+        output);
+}
+
+// revokeSave(callback?:AsyncCallback<RevokeSaveSuccessResponse>): void;
+// revokeSave(): Promise<RevokeSaveSuccessResponse>;
+napi_value JSDistributedObject::JSRevokeSave(napi_env env, napi_callback_info info)
+{
+    LOG_DEBUG("JSRevokeSave()");
+    struct RevokeSaveContext : public ContextBase {
+        DistributedObject *object;
+    };
+    auto ctxt = std::make_shared<RevokeSaveContext>();
+    std::function<void(size_t argc, napi_value * argv)> getCbOpe = [env, ctxt](size_t argc, napi_value *argv) {
+        JSObjectWrapper *wrapper = nullptr;
+        napi_status status = napi_unwrap(env, ctxt->self, (void **)&wrapper);
+        CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
+        ASSERT_MATCH_ELSE_RETURN_VOID(wrapper != nullptr);
+        ctxt->object = wrapper->GetObject();
+    };
+    ctxt->GetCbInfo(env, info, getCbOpe);
+    auto output = [env, ctxt](napi_value &result) {
+        if (ctxt->status == napi_ok) {
+            ctxt->status = napi_new_instance(env,
+                JSDistributedObject::GetRevokeSaveResultCons(env, ctxt->object->GetSessionId()), 0, nullptr, &result);
+            CHECK_STATUS_RETURN_VOID(ctxt, "output failed!");
+        }
+    };
+    return NapiQueue::AsyncWork(
+        env, ctxt, std::string(__FUNCTION__),
+        [ctxt]() {
+            LOG_INFO("start");
+            if (ctxt->object == nullptr) {
+                LOG_ERROR("object is null");
+                ctxt->status = napi_invalid_arg;
+                ctxt->error = std::string("object is null");
+                return;
+            }
+            uint32_t status = ctxt->object->RevokeSave();
+            if (status != SUCCESS) {
+                LOG_ERROR("Save failed, status = %{public}d", status);
+                ctxt->status = napi_invalid_arg;
+                ctxt->error = std::string("operation failed");
+                return;
+            }
+            ctxt->status = napi_ok;
+            LOG_INFO("end");
+        },
+        output);
+}
+
+napi_value JSDistributedObject::GetSaveResultCons(
+    napi_env env, std::string &sessionId, double version, std::string deviceId)
+{
+    const char *objectName = "SaveResult";
+    napi_value napiSessionId, napiVersion, napiDeviceId;
+    napi_value result;
+
+    napi_status status = JSUtil::SetValue(env, sessionId, napiSessionId);
+    ASSERT_MATCH_ELSE_RETURN_NULL(status == napi_ok);
+    status = JSUtil::SetValue(env, version, napiVersion);
+    ASSERT_MATCH_ELSE_RETURN_NULL(status == napi_ok);
+    status = JSUtil::SetValue(env, deviceId, napiDeviceId);
+    ASSERT_MATCH_ELSE_RETURN_NULL(status == napi_ok);
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_PROPERTY("sessionId", napiSessionId),
+        DECLARE_NAPI_PROPERTY("version", napiVersion),
+        DECLARE_NAPI_PROPERTY("deviceId", napiDeviceId)
+    };
+
+    status = napi_define_class(env, objectName, strlen(objectName), JSDistributedObject::JSConstructor, nullptr,
+        sizeof(desc) / sizeof(desc[0]), desc, &result);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
+    return result;
+}
+
+napi_value JSDistributedObject::GetRevokeSaveResultCons(napi_env env, std::string &sessionId)
+{
+    const char *objectName = "RevokeSaveResult";
+    napi_value napiSessionId;
+    napi_value result;
+
+    napi_status status = JSUtil::SetValue(env, sessionId, napiSessionId);
+    ASSERT_MATCH_ELSE_RETURN_NULL(status == napi_ok);
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_PROPERTY("sessionId", napiSessionId)
+    };
+
+    status = napi_define_class(env, objectName, strlen(objectName), JSDistributedObject::JSConstructor, nullptr,
+        sizeof(desc) / sizeof(desc[0]), desc, &result);
+    CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
+    return result;
 }
 } // namespace OHOS::ObjectStore

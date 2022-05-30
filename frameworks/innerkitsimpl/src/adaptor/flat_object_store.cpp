@@ -15,18 +15,24 @@
 
 #include "flat_object_store.h"
 
+#include "client_adaptor.h"
 #include "distributed_objectstore_impl.h"
 #include "logger.h"
+#include "object_callback.h"
+#include "object_service_proxy.h"
 #include "objectstore_errors.h"
+#include "softbus_adapter.h"
 
 namespace OHOS::ObjectStore {
 FlatObjectStore::FlatObjectStore(const std::string &bundleName)
 {
+    bundleName_ = bundleName;
     storageEngine_ = std::make_shared<FlatObjectStorageEngine>();
     uint32_t status = storageEngine_->Open(bundleName);
     if (status != SUCCESS) {
         LOG_ERROR("FlatObjectStore: Failed to open, error: open storage engine failure %{public}d", status);
     }
+    cacheManager_ = new CacheManager();
 }
 
 FlatObjectStore::~FlatObjectStore()
@@ -35,6 +41,8 @@ FlatObjectStore::~FlatObjectStore()
         storageEngine_->Close();
         storageEngine_ = nullptr;
     }
+    delete cacheManager_;
+    cacheManager_ = nullptr;
 }
 
 uint32_t FlatObjectStore::CreateObject(const std::string &sessionId)
@@ -48,6 +56,20 @@ uint32_t FlatObjectStore::CreateObject(const std::string &sessionId)
         LOG_ERROR("FlatObjectStore::CreateObject createTable err %{public}d", status);
         return status;
     }
+    std::function<void(const std::map<std::string, std::vector<uint8_t>> &data)> callback =
+        [sessionId, this](
+            const std::map<std::string, std::vector<uint8_t>> &data) {
+            if (data.size() > 0) {
+                LOG_INFO("objectstore, retrieve success");
+                auto result = storageEngine_->UpdateItems(sessionId, data);
+                if (result != SUCCESS) {
+                    LOG_ERROR("UpdateItems failed, status = %{public}d", result);
+                }
+            } else {
+                LOG_INFO("objectstore, retrieve empty");
+            }
+        };
+    cacheManager_->ResumeObject(bundleName_, sessionId, callback);
     return SUCCESS;
 }
 
@@ -108,6 +130,7 @@ uint32_t FlatObjectStore::Get(std::string &sessionId, const std::string &key, By
     }
     return storageEngine_->GetItem(sessionId, key, value);
 }
+
 uint32_t FlatObjectStore::SetStatusNotifier(std::shared_ptr<StatusWatcher> notifier)
 {
     if (!storageEngine_->isOpened_) {
@@ -116,6 +139,7 @@ uint32_t FlatObjectStore::SetStatusNotifier(std::shared_ptr<StatusWatcher> notif
     }
     return storageEngine_->SetStatusNotifier(notifier);
 }
+
 uint32_t FlatObjectStore::SyncAllData(const std::string &sessionId,
     const std::function<void(const std::map<std::string, DistributedDB::DBStatus> &)> &onComplete)
 {
@@ -123,6 +147,127 @@ uint32_t FlatObjectStore::SyncAllData(const std::string &sessionId,
         LOG_ERROR("FlatObjectStore::DB has not inited");
         return ERR_DB_NOT_INIT;
     }
-    return storageEngine_->SyncAllData(sessionId, onComplete);
+    std::vector<DeviceInfo> devices = SoftBusAdapter::GetInstance()->GetDeviceList();
+    std::vector<std::string> deviceIds;
+    for (auto item : devices) {
+        deviceIds.push_back(item.deviceId);
+    }
+    return storageEngine_->SyncAllData(sessionId, deviceIds, onComplete);
+}
+
+uint32_t FlatObjectStore::Save(const std::string &sessionId, const std::string &deviceId)
+{
+    if (cacheManager_ == nullptr) {
+        LOG_ERROR("FlatObjectStore::cacheManager_ is null");
+        return ERR_NULL_PTR;
+    }
+    std::map<std::string, std::vector<uint8_t>> objectData;
+    uint32_t status = storageEngine_->GetItems(sessionId, objectData);
+    if (status != SUCCESS) {
+        LOG_ERROR("FlatObjectStore::GetItems fail");
+        return status;
+    }
+    return cacheManager_->Save(bundleName_, sessionId, deviceId, objectData);
+}
+
+uint32_t FlatObjectStore::RevokeSave(const std::string &sessionId)
+{
+    if (cacheManager_ == nullptr) {
+        LOG_ERROR("FlatObjectStore::cacheManager_ is null");
+        return ERR_NULL_PTR;
+    }
+    return cacheManager_->RevokeSave(bundleName_, sessionId);
+}
+
+CacheManager::CacheManager()
+{
+}
+
+uint32_t CacheManager::Save(const std::string &bundleName, const std::string &sessionId, const std::string &deviceId,
+    const std::map<std::string, std::vector<uint8_t>> &objectData)
+{
+    std::unique_lock<std::mutex> lck(mutex_);
+    std::vector<std::string> deviceList = { deviceId };
+    BlockData<int32_t> blockData;
+    SaveObject(bundleName, sessionId, deviceList, objectData,
+        [this, &deviceId, &blockData](const std::map<std::string, int32_t> &results) {
+            LOG_INFO("CacheManager::task callback");
+            if (results.count(deviceId) != 0) {
+                blockData.SetValue(results.at(deviceId));
+            } else {
+                blockData.SetValue(ERR_DB_GET_FAIL);
+            }
+        });
+    LOG_INFO("CacheManager::start wait");
+    int32_t status = blockData.GetValue();
+    LOG_INFO("CacheManager::end wait, %{public}d", status);
+    return status == SUCCESS ? status : ERR_DB_GET_FAIL;
+}
+
+uint32_t CacheManager::RevokeSave(const std::string &bundleName, const std::string &sessionId)
+{
+    std::unique_lock<std::mutex> lck(mutex_);
+    BlockData<int32_t> blockData;
+    std::function<void(int32_t)> callback = [this, &blockData](int32_t result) {
+        LOG_INFO("CacheManager::task callback");
+        blockData.SetValue(result);
+    };
+    RevokeSaveObject(bundleName, sessionId, callback);
+    LOG_INFO("CacheManager::start wait");
+    int32_t status = blockData.GetValue();
+    LOG_INFO("CacheManager::end wait, %{public}d", status);
+    return status == SUCCESS ? status : ERR_DB_GET_FAIL;
+}
+
+int32_t CacheManager::SaveObject(const std::string &bundleName, const std::string &sessionId,
+    const std::vector<std::string> &deviceList, const std::map<std::string, std::vector<uint8_t>> &objectData,
+    const std::function<void(const std::map<std::string, int32_t> &)> &callback)
+{
+    sptr<OHOS::DistributedObject::IObjectService> proxy = ClientAdaptor::GetObjectService();
+    if (proxy == nullptr) {
+        LOG_ERROR("proxy is nullptr.");
+        return ERR_NULL_PTR;
+    }
+    sptr<IObjectSaveCallback> objectSaveCallback = new ObjectSaveCallback(callback);
+    int32_t status = proxy->ObjectStoreSave(bundleName, sessionId, deviceList, objectData, objectSaveCallback);
+    if (status != SUCCESS) {
+        LOG_ERROR("object save failed code=%d.", static_cast<int>(status));
+    }
+    LOG_INFO("object save successful");
+    return status;
+}
+
+int32_t CacheManager::RevokeSaveObject(
+    const std::string &bundleName, const std::string &sessionId, std::function<void(int32_t)> &callback)
+{
+    sptr<OHOS::DistributedObject::IObjectService> proxy = ClientAdaptor::GetObjectService();
+    if (proxy == nullptr) {
+        LOG_ERROR("proxy is nullptr.");
+        return ERR_NULL_PTR;
+    }
+    sptr<IObjectRevokeSaveCallback> objectRevokeSaveCallback = new ObjectRevokeSaveCallback(callback);
+    int32_t status = proxy->ObjectStoreRevokeSave(bundleName, sessionId, objectRevokeSaveCallback);
+    if (status != SUCCESS) {
+        LOG_ERROR("object revoke save failed code=%d.", static_cast<int>(status));
+    }
+    LOG_INFO("object revoke save successful");
+    return status;
+}
+
+int32_t CacheManager::ResumeObject(const std::string &bundleName, const std::string &sessionId,
+    std::function<void(const std::map<std::string, std::vector<uint8_t>> &data)> &callback)
+{
+    sptr<OHOS::DistributedObject::IObjectService> proxy = ClientAdaptor::GetObjectService();
+    if (proxy == nullptr) {
+        LOG_ERROR("proxy is nullptr.");
+        return ERR_NULL_PTR;
+    }
+    sptr<IObjectRetrieveCallback> objectRevokeSaveCallback = new ObjectRetrieveCallback(callback);
+    int32_t status = proxy->ObjectStoreRetrieve(bundleName, sessionId, objectRevokeSaveCallback);
+    if (status != SUCCESS) {
+        LOG_ERROR("object resume failed code=%d.", static_cast<int>(status));
+    }
+    LOG_INFO("object resume successful");
+    return status;
 }
 } // namespace OHOS::ObjectStore

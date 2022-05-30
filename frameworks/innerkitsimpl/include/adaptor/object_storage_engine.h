@@ -56,7 +56,9 @@ public:
     virtual uint32_t CreateTable(const std::string &key) = 0;
     virtual uint32_t GetTable(const std::string &key, std::map<std::string, Value> &result) = 0;
     virtual uint32_t UpdateItem(const std::string &key, const std::string &itemKey, Value &value) = 0;
+    virtual uint32_t UpdateItems(const std::string &key, const std::map<std::string, std::vector<uint8_t>> &data) = 0;
     virtual uint32_t GetItem(const std::string &key, const std::string &itemKey, Value &value) = 0;
+    virtual uint32_t GetItems(const std::string &key, std::map<std::string, std::vector<uint8_t>> &data) = 0;
     virtual uint32_t RegisterObserver(const std::string &key, std::shared_ptr<TableWatcher> watcher) = 0;
     virtual uint32_t UnRegisterObserver(const std::string &key) = 0;
     virtual uint32_t SetStatusNotifier(std::shared_ptr<StatusWatcher> watcher) = 0;

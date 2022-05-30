@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-#include "js_notifier_impl.h"
+#include "notifier_impl.h"
 
-#include "js_distributedobjectstore.h"
 #include "logger.h"
 #include "objectstore_errors.h"
 
@@ -42,12 +41,16 @@ std::shared_ptr<NotifierImpl> NotifierImpl::GetInstance()
     }
     return instance;
 }
+
 void NotifierImpl::AddWatcher(std::string &sessionId, JSWatcher *watcher)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     watchers_.insert_or_assign(sessionId, watcher);
 }
+
 void NotifierImpl::DelWatcher(std::string &sessionId)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     watchers_.erase(sessionId);
 }
 
@@ -56,6 +59,7 @@ void NotifierImpl::OnChanged(
 {
     LOG_INFO(
         "status changed %{public}s %{public}s %{public}s", sessionId.c_str(), networkId.c_str(), onlineStatus.c_str());
+    std::lock_guard<std::mutex> lock(mutex_);
     if (watchers_.count(sessionId) != 0) {
         LOG_INFO(
             "start emit %{public}s %{public}s %{public}s", sessionId.c_str(), networkId.c_str(), onlineStatus.c_str());

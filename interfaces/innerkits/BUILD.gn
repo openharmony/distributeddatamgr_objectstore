@@ -35,10 +35,12 @@ config("objectstore_public_config") {
 ohos_shared_library("distributeddataobject_impl") {
   part_name = "distributeddataobject"
   sources = [
+    "../../frameworks/innerkitsimpl/src/adaptor/client_adaptor.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_impl.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_store_impl.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/flat_object_storage_engine.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/flat_object_store.cpp",
+    "../../frameworks/innerkitsimpl/src/adaptor/object_callback.cpp",
     "../../frameworks/innerkitsimpl/src/communicator/app_device_handler.cpp",
     "../../frameworks/innerkitsimpl/src/communicator/app_pipe_handler.cpp",
     "../../frameworks/innerkitsimpl/src/communicator/app_pipe_mgr.cpp",
@@ -58,10 +60,12 @@ ohos_shared_library("distributeddataobject_impl") {
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "distributeddatamgr:distributeddata_inner",
     "dsoftbus_standard:softbus_client",
     "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
   ]
-
   public_configs = [ ":objectstore_public_config" ]
   relative_install_dir = "module/data"
   subsystem_name = "distributeddataobject"

@@ -31,6 +31,7 @@ public:
         const std::string &sessionId, const std::string &networkId, const std::string &onlineStatus) override;
 
 private:
+    std::mutex mutex_;
     std::map<std::string, JSWatcher *> watchers_;
 };
 } // namespace OHOS::ObjectStore

@@ -29,7 +29,6 @@ public:
     static napi_value JSDestroyObjectSync(napi_env env, napi_callback_info info);
     static napi_value JSOn(napi_env env, napi_callback_info info);
     static napi_value JSOff(napi_env env, napi_callback_info info);
-    static std::string GetBundleName(napi_env env);
     static napi_value JSRecordCallback(napi_env env, napi_callback_info info);
     static napi_value JSDeleteCallback(napi_env env, napi_callback_info info);
 private:
@@ -39,8 +38,9 @@ private:
         const std::string &objectId, napi_value callback);
     static void DelCallback(napi_env env, std::map<std::string, std::list<napi_ref>> &callbacks,
         const std::string &sessionId, napi_value callback = nullptr);
-    static void RestoreWatchers(napi_env env, JSObjectWrapper *wrapper, const std::string &objectId);
     static bool CheckSyncPermission(napi_env env);
+    static void RestoreWatchers(napi_env env, JSObjectWrapper *wrapper, const std::string &objectId);
+    static std::string GetBundleName(napi_env env);
 };
 } // namespace OHOS::ObjectStore
 #endif // JS_DISTRIBUTEDDATAOBJECTSTORE_H

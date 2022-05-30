@@ -254,7 +254,7 @@ std::vector<DeviceInfo> SoftBusAdapter::GetDeviceList() const
         LOG_ERROR("GetAllNodeDeviceInfo error");
         return dis;
     }
-    LOG_DEBUG("GetAllNodeDeviceInfo success infoNum=%{public}d", infoNum);
+    LOG_INFO("GetAllNodeDeviceInfo success infoNum=%{public}d", infoNum);
 
     for (int i = 0; i < infoNum; i++) {
         std::string udid = GetUdidByNodeId(std::string(info[i].networkId));
@@ -456,7 +456,7 @@ Status SoftBusAdapter::SendData(
 {
     SessionAttribute attr;
     attr.dataType = TYPE_BYTES;
-    LOG_DEBUG("[SendData] to %{public}s ,session:%{public}s, size:%{public}d",
+    LOG_INFO("[SendData] to %{public}s ,session:%{public}s, size:%{public}d",
         ToBeAnonymous(deviceId.deviceId).c_str(), pipeInfo.pipeId.c_str(), size);
     int sessionId = OpenSession(
         pipeInfo.pipeId.c_str(), pipeInfo.pipeId.c_str(), ToNodeID(deviceId.deviceId).c_str(), "GROUP_ID", &attr);
