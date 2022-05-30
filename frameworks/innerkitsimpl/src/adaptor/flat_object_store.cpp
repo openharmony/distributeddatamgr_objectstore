@@ -181,56 +181,42 @@ uint32_t FlatObjectStore::RevokeSave(const std::string &sessionId)
 
 CacheManager::CacheManager()
 {
-    isProcessing_ = false;
 }
 
 uint32_t CacheManager::Save(const std::string &bundleName, const std::string &sessionId, const std::string &deviceId,
     const std::map<std::string, std::vector<uint8_t>> &objectData)
 {
     std::unique_lock<std::mutex> lck(mutex_);
-    if (isProcessing_) {
-        LOG_ERROR("CacheManager::is processiong another cache task");
-        return ERR_PROCESSING;
-    }
-    isProcessing_ = true;
     std::vector<std::string> deviceList = { deviceId };
-    uint32_t status = ERR_DB_GET_FAIL;
+    BlockData<int32_t> blockData;
     SaveObject(bundleName, sessionId, deviceList, objectData,
-        [this, &status, &deviceId](const std::map<std::string, int32_t> &results) {
+        [this, &deviceId, &blockData](const std::map<std::string, int32_t> &results) {
             LOG_INFO("CacheManager::task callback");
-            isProcessing_ = false;
             if (results.count(deviceId) != 0) {
-                status = results.at(deviceId);
-                LOG_INFO("CacheManager::result %{public}d", status);
+                blockData.SetValue(results.at(deviceId));
+            } else {
+                blockData.SetValue(ERR_DB_GET_FAIL);
             }
-            condition_.notify_all();
         });
-    // wait for operation callback, max wait time is 10s
-    condition_.wait_for(lck, std::chrono::seconds(10), [this]() { return !isProcessing_; });
-    isProcessing_ = false;
-    return status;
+    LOG_INFO("CacheManager::start wait");
+    int32_t status = blockData.GetValue();
+    LOG_INFO("CacheManager::end wait, %{public}d", status);
+    return status == SUCCESS ? status : ERR_DB_GET_FAIL;
 }
 
 uint32_t CacheManager::RevokeSave(const std::string &bundleName, const std::string &sessionId)
 {
     std::unique_lock<std::mutex> lck(mutex_);
-    if (isProcessing_) {
-        LOG_ERROR("CacheManager::is processiong another cache task");
-        return ERR_PROCESSING;
-    }
-    isProcessing_ = true;
-    int32_t status = ERR_DB_GET_FAIL;
-    std::function<void(int32_t)> callback = [this, &status](int32_t result) {
+    BlockData<int32_t> blockData;
+    std::function<void(int32_t)> callback = [this, &blockData](int32_t result) {
         LOG_INFO("CacheManager::task callback");
-        isProcessing_ = false;
-        status = result;
-        condition_.notify_all();
+        blockData.SetValue(result);
     };
     RevokeSaveObject(bundleName, sessionId, callback);
-    // wait for operation callback, max wait time is 10s
-    condition_.wait_for(lck, std::chrono::seconds(10), [this]() { return !isProcessing_; });
-    isProcessing_ = false;
-    return status;
+    LOG_INFO("CacheManager::start wait");
+    int32_t status = blockData.GetValue();
+    LOG_INFO("CacheManager::end wait, %{public}d", status);
+    return status == SUCCESS ? status : ERR_DB_GET_FAIL;
 }
 
 int32_t CacheManager::SaveObject(const std::string &bundleName, const std::string &sessionId,

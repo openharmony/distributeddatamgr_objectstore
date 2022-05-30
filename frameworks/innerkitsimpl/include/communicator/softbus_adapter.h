@@ -15,10 +15,8 @@
 
 #ifndef DISTRIBUTEDDATAFWK_SRC_SOFTBUS_ADAPTER_H
 #define DISTRIBUTEDDATAFWK_SRC_SOFTBUS_ADAPTER_H
-#include <condition_variable>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <set>
 #include <tuple>
 
@@ -27,45 +25,10 @@
 #include "app_types.h"
 #include "session.h"
 #include "softbus_bus_center.h"
+#include "block_data.h"
+
 namespace OHOS {
 namespace ObjectStore {
-template <typename T>
-class BlockData {
-public:
-    explicit BlockData() {}
-    ~BlockData() {}
-public:
-    void SetValue(T &data)
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-        data_ = data;
-        isSet_ = true;
-        cv_.notify_one();
-    }
-
-    T GetValue()
-    {
-        std::unique_lock<std::mutex> lock(mutex_);
-        cv_.wait(lock, [this]() { return isSet_; });
-        T data = data_;
-        cv_.notify_one();
-        return data;
-    }
-
-    void Clear()
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-        isSet_ = false;
-        cv_.notify_one();
-    }
-
-private:
-    bool isSet_ = false;
-    T data_;
-    std::mutex mutex_;
-    std::condition_variable cv_;
-};
-
 class SoftBusAdapter {
 public:
     SoftBusAdapter();

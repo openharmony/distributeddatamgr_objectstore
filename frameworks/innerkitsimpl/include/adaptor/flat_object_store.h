@@ -21,6 +21,7 @@
 
 #include "bytes.h"
 #include "flat_object_storage_engine.h"
+#include "block_data.h"
 
 namespace OHOS::ObjectStore {
 class FlatObjectWatcher : public TableWatcher {
@@ -45,9 +46,7 @@ private:
         const std::function<void(const std::map<std::string, int32_t> &)> &callback);
     int32_t RevokeSaveObject(
         const std::string &bundleName, const std::string &sessionId, std::function<void(int32_t)> &callback);
-    bool isProcessing_;
     std::mutex mutex_;
-    std::condition_variable condition_;
 };
 
 class FlatObjectStore {
