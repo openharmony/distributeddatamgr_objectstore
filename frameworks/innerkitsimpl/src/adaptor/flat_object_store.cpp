@@ -41,10 +41,8 @@ FlatObjectStore::~FlatObjectStore()
         storageEngine_->Close();
         storageEngine_ = nullptr;
     }
-    if (cacheManager_ != nullptr) {
-        delete cacheManager_;
-        cacheManager_ = nullptr;
-    }
+    delete cacheManager_;
+    cacheManager_ = nullptr;
 }
 
 uint32_t FlatObjectStore::CreateObject(const std::string &sessionId)

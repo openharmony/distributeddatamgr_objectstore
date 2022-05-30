@@ -263,7 +263,7 @@ napi_value JSDistributedObject::JSSave(napi_env env, napi_callback_info info)
 }
 
 // revokeSave(callback?:AsyncCallback<RevokeSaveSuccessResponse>): void;
-// save(): Promise<RevokeSaveSuccessResponse>;
+// revokeSave(): Promise<RevokeSaveSuccessResponse>;
 napi_value JSDistributedObject::JSRevokeSave(napi_env env, napi_callback_info info)
 {
     LOG_DEBUG("JSSave()");
@@ -322,8 +322,11 @@ napi_value JSDistributedObject::GetSaveResultCons(
     ASSERT_MATCH_ELSE_RETURN_NULL(status == napi_ok);
     status = JSUtil::SetValue(env, deviceId, napiDeviceId);
     ASSERT_MATCH_ELSE_RETURN_NULL(status == napi_ok);
-    napi_property_descriptor desc[] = { DECLARE_NAPI_PROPERTY("sessionId", napiSessionId),
-        DECLARE_NAPI_PROPERTY("version", napiDeviceId), DECLARE_NAPI_PROPERTY("deviceId", napiDeviceId) };
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_PROPERTY("sessionId", napiSessionId),
+        DECLARE_NAPI_PROPERTY("version", napiDeviceId),
+        DECLARE_NAPI_PROPERTY("deviceId", napiDeviceId)
+    };
 
     status = napi_define_class(env, objectName, strlen(objectName), JSDistributedObject::JSConstructor, nullptr,
         sizeof(desc) / sizeof(desc[0]), desc, &result);
@@ -339,7 +342,9 @@ napi_value JSDistributedObject::GetRevokeSaveResultCons(napi_env env, std::strin
 
     napi_status status = JSUtil::SetValue(env, sessionId, napiSessionId);
     ASSERT_MATCH_ELSE_RETURN_NULL(status == napi_ok);
-    napi_property_descriptor desc[] = { DECLARE_NAPI_PROPERTY("sessionId", napiSessionId) };
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_PROPERTY("sessionId", napiSessionId)
+    };
 
     status = napi_define_class(env, objectName, strlen(objectName), JSDistributedObject::JSConstructor, nullptr,
         sizeof(desc) / sizeof(desc[0]), desc, &result);
