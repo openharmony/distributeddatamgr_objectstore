@@ -55,7 +55,7 @@ config("objectstore_config") {
     "../../frameworks/innerkitsimpl/include/communicator",
     "../../interfaces/innerkits",
     "//third_party/bounds_checking_function/include",
-    "//foundation/aafwk/standard/frameworks/kits/appkit/native/ability_runtime/context",
+    "//foundation/ability/ability_runtime/frameworks/kits/appkit/native/ability_runtime/context",
   ]
 }
 
@@ -107,7 +107,7 @@ ohos_shared_library("distributeddataobject") {
   deps = [
     ":distributed_data_object_abc",
     ":distributed_data_object_js",
-    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/ability/ability_runtime/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb:distributeddb",
     "//foundation/distributeddatamgr/objectstore/interfaces/innerkits:distributeddataobject_impl",
     "//third_party/bounds_checking_function:libsec_static",
