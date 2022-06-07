@@ -23,6 +23,7 @@ config("objectstore_config") {
     "../../frameworks/innerkitsimpl/include/communicator",
     "../../interfaces/innerkits",
     "//third_party/bounds_checking_function/include",
+    "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/adapter/include/dfx",
   ]
 }
 
@@ -54,6 +55,7 @@ ohos_shared_library("distributeddataobject_impl") {
   configs = [ ":objectstore_config" ]
 
   deps = [
+    "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/adapter/dfx:distributeddata_dfx_static",
     "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb:distributeddb",
     "//third_party/bounds_checking_function:libsec_static",
     "//third_party/libuv:uv",
@@ -62,6 +64,8 @@ ohos_shared_library("distributeddataobject_impl") {
   external_deps = [
     "distributeddatamgr:distributeddata_inner",
     "dsoftbus_standard:softbus_client",
+    "hitrace_native:hitrace_meter",
+    "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "samgr_standard:samgr_proxy",
