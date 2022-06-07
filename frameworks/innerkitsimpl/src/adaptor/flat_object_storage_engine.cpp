@@ -112,6 +112,26 @@ uint32_t FlatObjectStorageEngine::CreateTable(const std::string &key)
         std::lock_guard<std::mutex> lock(operationMutex_);
         delegates_.insert_or_assign(key, kvStore);
     }
+
+    auto onComplete = [key, this](const std::map<std::string, DistributedDB::DBStatus> &devices) {
+        LOG_INFO("complete");
+        for (auto item : devices) {
+            LOG_INFO("%{public}s pull data result %{public}d in device %{public}s", key.c_str(), item.second,
+                     SoftBusAdapter::GetInstance()->ToNodeID(item.first).c_str());
+        }
+        if (statusWatcher_ != nullptr) {
+            for (auto item : devices) {
+                statusWatcher_->OnChanged(key, SoftBusAdapter::GetInstance()->ToNodeID(item.first),
+                                          item.second == DistributedDB::OK ? "online" : "offline");
+            }
+        }
+    };
+    std::vector<DeviceInfo> devices = SoftBusAdapter::GetInstance()->GetDeviceList();
+    std::vector<std::string> deviceIds;
+    for (auto item : devices) {
+        deviceIds.push_back(item.deviceId);
+    }
+    SyncAllData(key, deviceIds, onComplete);
     return SUCCESS;
 }
 

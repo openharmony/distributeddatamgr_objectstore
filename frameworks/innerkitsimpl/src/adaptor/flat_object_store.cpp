@@ -189,7 +189,7 @@ uint32_t CacheManager::Save(const std::string &bundleName, const std::string &se
     std::unique_lock<std::mutex> lck(mutex_);
     std::vector<std::string> deviceList = { deviceId };
     BlockData<int32_t> blockData;
-    SaveObject(bundleName, sessionId, deviceList, objectData,
+    int32_t status = SaveObject(bundleName, sessionId, deviceList, objectData,
         [this, &deviceId, &blockData](const std::map<std::string, int32_t> &results) {
             LOG_INFO("CacheManager::task callback");
             if (results.count(deviceId) != 0) {
@@ -198,8 +198,12 @@ uint32_t CacheManager::Save(const std::string &bundleName, const std::string &se
                 blockData.SetValue(ERR_DB_GET_FAIL);
             }
         });
+    if (status != SUCCESS) {
+        LOG_ERROR("SaveObject failed");
+        return status;
+    }
     LOG_INFO("CacheManager::start wait");
-    int32_t status = blockData.GetValue();
+    status = blockData.GetValue();
     LOG_INFO("CacheManager::end wait, %{public}d", status);
     return status == SUCCESS ? status : ERR_DB_GET_FAIL;
 }
@@ -212,9 +216,13 @@ uint32_t CacheManager::RevokeSave(const std::string &bundleName, const std::stri
         LOG_INFO("CacheManager::task callback");
         blockData.SetValue(result);
     };
-    RevokeSaveObject(bundleName, sessionId, callback);
+    int32_t status = RevokeSaveObject(bundleName, sessionId, callback);
+    if (status != SUCCESS) {
+        LOG_ERROR("RevokeSaveObject failed");
+        return status;
+    }
     LOG_INFO("CacheManager::start wait");
-    int32_t status = blockData.GetValue();
+    status = blockData.GetValue();
     LOG_INFO("CacheManager::end wait, %{public}d", status);
     return status == SUCCESS ? status : ERR_DB_GET_FAIL;
 }
