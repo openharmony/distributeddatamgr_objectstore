@@ -47,7 +47,7 @@ DistributedObject *DistributedObjectStoreImpl::CacheObject(
 
 DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &sessionId)
 {
-    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::", __FUNCTION__),
+    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
         DistributedKv::TraceSwitch::TRACE_CHAIN_ON);
     if (flatObjectStore_ == nullptr) {
         LOG_ERROR("DistributedObjectStoreImpl::CreateObject store not opened!");
@@ -63,7 +63,7 @@ DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &s
 
 uint32_t DistributedObjectStoreImpl::DeleteObject(const std::string &sessionId)
 {
-    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::", __FUNCTION__),
+    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
         DistributedKv::TraceSwitch::TRACE_CHAIN_ON);
     if (flatObjectStore_ == nullptr) {
         LOG_ERROR("DistributedObjectStoreImpl::Sync object err ");

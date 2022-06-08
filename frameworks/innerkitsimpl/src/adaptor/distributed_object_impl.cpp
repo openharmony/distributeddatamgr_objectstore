@@ -55,7 +55,7 @@ uint32_t GetNum(Bytes &data, uint32_t offset, void *val, uint32_t valLen)
 
 uint32_t DistributedObjectImpl::PutDouble(const std::string &key, double value)
 {
-    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::", __FUNCTION__),
+    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
         DistributedKv::TraceSwitch::BYTRACE_ON | DistributedKv::TraceSwitch::TRACE_CHAIN_ON);
     Bytes data;
     Type type = Type::TYPE_DOUBLE;
@@ -70,7 +70,7 @@ uint32_t DistributedObjectImpl::PutDouble(const std::string &key, double value)
 
 uint32_t DistributedObjectImpl::PutBoolean(const std::string &key, bool value)
 {
-    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::", __FUNCTION__),
+    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
         DistributedKv::TraceSwitch::BYTRACE_ON | DistributedKv::TraceSwitch::TRACE_CHAIN_ON);
     Bytes data;
     Type type = Type::TYPE_BOOLEAN;
@@ -85,7 +85,7 @@ uint32_t DistributedObjectImpl::PutBoolean(const std::string &key, bool value)
 
 uint32_t DistributedObjectImpl::PutString(const std::string &key, const std::string &value)
 {
-    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::", __FUNCTION__),
+    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
         DistributedKv::TraceSwitch::BYTRACE_ON | DistributedKv::TraceSwitch::TRACE_CHAIN_ON);
     Bytes data;
     Type type = Type::TYPE_STRING;
@@ -175,7 +175,7 @@ DistributedObjectImpl::DistributedObjectImpl(const std::string &sessionId, FlatO
 
 uint32_t DistributedObjectImpl::PutComplex(const std::string &key, const std::vector<uint8_t> &value)
 {
-    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::", __FUNCTION__),
+    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
         DistributedKv::TraceSwitch::BYTRACE_ON | DistributedKv::TraceSwitch::TRACE_CHAIN_ON);
     Bytes data;
     Type type = Type::TYPE_COMPLEX;
