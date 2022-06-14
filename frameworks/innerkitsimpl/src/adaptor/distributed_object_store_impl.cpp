@@ -62,8 +62,8 @@ void DistributedObjectStoreImpl::RemoveCacheObject(const std::string &sessionId)
 
 DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &sessionId)
 {
-    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
-        DistributedKv::TraceSwitch::TRACE_CHAIN_ON);
+    DistributedDataDfx::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
+        DistributedDataDfx::TraceSwitch::TRACE_CHAIN_ON);
     if (flatObjectStore_ == nullptr) {
         LOG_ERROR("DistributedObjectStoreImpl::CreateObject store not opened!");
         return nullptr;
@@ -78,8 +78,8 @@ DistributedObject *DistributedObjectStoreImpl::CreateObject(const std::string &s
 
 uint32_t DistributedObjectStoreImpl::DeleteObject(const std::string &sessionId)
 {
-    DistributedKv::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
-        DistributedKv::TraceSwitch::TRACE_CHAIN_ON);
+    DistributedDataDfx::DdsTrace trace(std::string("DistributedObjectImpl::") + std::string(__FUNCTION__),
+        DistributedDataDfx::TraceSwitch::TRACE_CHAIN_ON);
     if (flatObjectStore_ == nullptr) {
         LOG_ERROR("DistributedObjectStoreImpl::Sync object err ");
         return ERR_NULL_OBJECTSTORE;
