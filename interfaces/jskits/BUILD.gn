@@ -119,7 +119,7 @@ ohos_shared_library("distributeddataobject") {
     "ability_runtime:ability_manager",
     "ability_runtime:runtime",
     "access_token:libaccesstoken_sdk",
-    "dsoftbus_standard:softbus_client",
+    "dsoftbus:softbus_client",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "napi:ace_napi",

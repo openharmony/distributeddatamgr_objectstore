@@ -65,7 +65,7 @@ ohos_shared_library("distributeddataobject_impl") {
   ]
   external_deps = [
     "distributeddatamgr:distributeddata_inner",
-    "dsoftbus_standard:softbus_client",
+    "dsoftbus:softbus_client",
     "hitrace_native:hitrace_meter",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
