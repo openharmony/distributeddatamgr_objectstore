@@ -187,7 +187,6 @@ uint32_t CacheManager::Save(const std::string &bundleName, const std::string &se
     const std::map<std::string, std::vector<uint8_t>> &objectData)
 {
     std::unique_lock<std::mutex> lck(mutex_);
-    //std::vector<std::string> deviceList = { deviceId };
     BlockData<int32_t> blockData;
     int32_t status = SaveObject(bundleName, sessionId, deviceId, objectData,
         [this, &deviceId, &blockData](const std::map<std::string, int32_t> &results) {
