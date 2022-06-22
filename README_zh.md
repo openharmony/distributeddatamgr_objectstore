@@ -100,7 +100,7 @@ g_object.parent = {mother:"jack mom",father:"jack Dad"};
 g_object.list = [{mother:"jack mom"}, {father:"jack Dad"}];
 // 对端设备收到change回调，fields为name,age,isVis,parent和list
 ```
-![icon-note.gif](Pictures/icon-note.gif) **说明：** 针对复杂类型的数据修改，目前支持对根属性的修改，暂不支持对下级属性的修改。示例如下：
+![icon-note.gif](pictures/icon-note.gif) **说明：** 针对复杂类型的数据修改，目前支持对根属性的修改，暂不支持对下级属性的修改。示例如下：
 
 ```js
 //支持的修改方式
