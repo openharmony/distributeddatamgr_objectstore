@@ -45,7 +45,18 @@
         "deps": {
             "components": [
                 "ability_base",
-                "ability_runtime"
+                "ability_runtime",
+                "hitrace_native",
+                "dsoftbus",
+                "distributeddatamgr",
+                "napi",
+                "common",
+                "samgr_standard",
+                "ipc",
+                "hiviewdfx_hilog_native",
+                "libuv",
+                "utils_base",
+                "access_token"
             ],
             "third_party": []
         },
