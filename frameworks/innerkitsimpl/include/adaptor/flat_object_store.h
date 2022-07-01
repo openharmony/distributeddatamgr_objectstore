@@ -21,7 +21,7 @@
 
 #include "bytes.h"
 #include "flat_object_storage_engine.h"
-#include "block_data.h"
+#include "condition_lock.h"
 
 namespace OHOS::ObjectStore {
 class FlatObjectWatcher : public TableWatcher {
