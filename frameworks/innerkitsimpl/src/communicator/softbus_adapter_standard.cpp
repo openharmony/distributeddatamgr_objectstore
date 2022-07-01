@@ -485,13 +485,13 @@ Status SoftBusAdapter::SendData(
 int32_t SoftBusAdapter::GetSessionStatus(int32_t sessionId)
 {
     auto semaphore = GetSemaphore(sessionId);
-    return semaphore->GetValue();
+    return semaphore->Wait();
 }
 
 void SoftBusAdapter::OnSessionOpen(int32_t sessionId, int32_t status)
 {
     auto semaphore = GetSemaphore(sessionId);
-    semaphore->SetValue(status);
+    semaphore->Notify(status);
 }
 
 void SoftBusAdapter::OnSessionClose(int32_t sessionId)
@@ -504,11 +504,11 @@ void SoftBusAdapter::OnSessionClose(int32_t sessionId)
     }
 }
 
-std::shared_ptr<BlockData<int32_t>> SoftBusAdapter::GetSemaphore(int32_t sessionId)
+std::shared_ptr<ConditionLock<int32_t>> SoftBusAdapter::GetSemaphore(int32_t sessionId)
 {
     lock_guard<mutex> lock(statusMutex_);
     if (sessionsStatus_.find(sessionId) == sessionsStatus_.end()) {
-        sessionsStatus_.emplace(sessionId, std::make_shared<BlockData<int32_t>>());
+        sessionsStatus_.emplace(sessionId, std::make_shared<ConditionLock<int32_t>>());
     }
     return sessionsStatus_[sessionId];
 }

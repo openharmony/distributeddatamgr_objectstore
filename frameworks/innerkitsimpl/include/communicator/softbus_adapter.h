@@ -25,7 +25,7 @@
 #include "app_types.h"
 #include "session.h"
 #include "softbus_bus_center.h"
-#include "block_data.h"
+#include "condition_lock.h"
 
 namespace OHOS {
 namespace ObjectStore {
@@ -85,7 +85,7 @@ public:
     void OnSessionClose(int32_t sessionId);
 
 private:
-    std::shared_ptr<BlockData<int32_t>> GetSemaphore (int32_t sessinId);
+    std::shared_ptr<ConditionLock<int32_t>> GetSemaphore (int32_t sessinId);
     mutable std::mutex networkMutex_{};
     mutable std::map<std::string, std::string> networkId2Udid_{};
     DeviceInfo localInfo_{};
@@ -100,7 +100,7 @@ private:
     INodeStateCb nodeStateCb_{};
     ISessionListener sessionListener_{};
     std::mutex statusMutex_ {};
-    std::map<int32_t, std::shared_ptr<BlockData<int32_t>>> sessionsStatus_;
+    std::map<int32_t, std::shared_ptr<ConditionLock<int32_t>>> sessionsStatus_;
 };
 } // namespace ObjectStore
 } // namespace OHOS

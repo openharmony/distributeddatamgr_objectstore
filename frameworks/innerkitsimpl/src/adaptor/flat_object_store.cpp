@@ -187,14 +187,14 @@ uint32_t CacheManager::Save(const std::string &bundleName, const std::string &se
     const std::map<std::string, std::vector<uint8_t>> &objectData)
 {
     std::unique_lock<std::mutex> lck(mutex_);
-    BlockData<int32_t> blockData;
+    ConditionLock<int32_t> conditionLock;
     int32_t status = SaveObject(bundleName, sessionId, deviceId, objectData,
-        [this, &deviceId, &blockData](const std::map<std::string, int32_t> &results) {
+        [this, &deviceId, &conditionLock](const std::map<std::string, int32_t> &results) {
             LOG_INFO("CacheManager::task callback");
             if (results.count(deviceId) != 0) {
-                blockData.SetValue(results.at(deviceId));
+                conditionLock.Notify(results.at(deviceId));
             } else {
-                blockData.SetValue(ERR_DB_GET_FAIL);
+                conditionLock.Notify(ERR_DB_GET_FAIL);
             }
         });
     if (status != SUCCESS) {
@@ -202,7 +202,7 @@ uint32_t CacheManager::Save(const std::string &bundleName, const std::string &se
         return status;
     }
     LOG_INFO("CacheManager::start wait");
-    status = blockData.GetValue();
+    status = conditionLock.Wait();
     LOG_INFO("CacheManager::end wait, %{public}d", status);
     return status == SUCCESS ? status : ERR_DB_GET_FAIL;
 }
@@ -210,10 +210,10 @@ uint32_t CacheManager::Save(const std::string &bundleName, const std::string &se
 uint32_t CacheManager::RevokeSave(const std::string &bundleName, const std::string &sessionId)
 {
     std::unique_lock<std::mutex> lck(mutex_);
-    BlockData<int32_t> blockData;
-    std::function<void(int32_t)> callback = [this, &blockData](int32_t result) {
+    ConditionLock<int32_t> conditionLock;
+    std::function<void(int32_t)> callback = [this, &conditionLock](int32_t result) {
         LOG_INFO("CacheManager::task callback");
-        blockData.SetValue(result);
+        conditionLock.Notify(result);
     };
     int32_t status = RevokeSaveObject(bundleName, sessionId, callback);
     if (status != SUCCESS) {
@@ -221,7 +221,7 @@ uint32_t CacheManager::RevokeSave(const std::string &bundleName, const std::stri
         return status;
     }
     LOG_INFO("CacheManager::start wait");
-    status = blockData.GetValue();
+    status = conditionLock.Wait();
     LOG_INFO("CacheManager::end wait, %{public}d", status);
     return status == SUCCESS ? status : ERR_DB_GET_FAIL;
 }
