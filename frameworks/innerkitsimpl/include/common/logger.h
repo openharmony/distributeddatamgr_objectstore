@@ -19,7 +19,7 @@
 #ifdef HILOG_ENABLE
 #include "hilog/log.h"
 namespace OHOS::ObjectStore {
-static const OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001650, "ObjectStore-x" };
+static const OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001652, "ObjectStore-x" };
 
 #define LOG_DEBUG(fmt, ...)               \
     ((void)OHOS::HiviewDFX::HiLog::Debug( \
