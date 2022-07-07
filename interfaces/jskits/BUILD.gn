@@ -10,7 +10,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import("//ark/ts2abc/ts2panda/ts2abc_config.gni")
+import("//arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
 import("//build/ohos.gni")
 import("//build/ohos/ace/ace.gni")
 import("//foundation/arkui/ace_engine/ace_config.gni")
@@ -22,7 +22,7 @@ group("build_module") {
 # compile .js to .abc.
 action("gen_distributed_data_object_abc") {
   visibility = [ ":*" ]
-  script = "//ark/ts2abc/ts2panda/scripts/generate_js_bytecode.py"
+  script = "//arkcompiler/ets_frontend/ts2panda/scripts/generate_js_bytecode.py"
 
   args = [
     "--src-js",
@@ -37,7 +37,7 @@ action("gen_distributed_data_object_abc") {
     rebase_path("${node_modules}"),
     "--module",
   ]
-  deps = [ "//ark/ts2abc/ts2panda:ark_ts2abc_build" ]
+  deps = [ "//arkcompiler/ets_frontend/ts2panda:ark_ts2abc_build" ]
   inputs = [ "distributed_data_object.js" ]
   outputs = [ target_out_dir + "/distributed_data_object.abc" ]
 }
