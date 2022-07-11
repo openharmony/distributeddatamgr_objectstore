@@ -78,7 +78,8 @@
                 }
             ],
             "test": [
-                "//foundation/distributeddatamgr/objectstore/frameworks/jskitsimpl/test/unittest"
+                "//foundation/distributeddatamgr/objectstore/frameworks/innerkitsimpl/test/unittest:unittest",
+                "//foundation/distributeddatamgr/objectstore/frameworks/jskitsimpl/test/unittest:unittest"
             ]
         }
     }
