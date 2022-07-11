@@ -55,6 +55,7 @@ napi_value JSDistributedObject::JSGet(napi_env env, napi_callback_info info)
     status = napi_unwrap(env, thisVar, (void **)&wrapper);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     ASSERT_MATCH_ELSE_RETURN_NULL(wrapper != nullptr);
+    ASSERT_MATCH_ELSE_RETURN_NULL(wrapper->GetObject() != nullptr);
     napi_value result = nullptr;
     if (wrapper->isUndefined(key)) {
         napi_get_undefined(env, &result);
@@ -88,6 +89,7 @@ napi_value JSDistributedObject::JSPut(napi_env env, napi_callback_info info)
     status = napi_unwrap(env, thisVar, (void **)&wrapper);
     CHECK_EQUAL_WITH_RETURN_NULL(status, napi_ok);
     ASSERT_MATCH_ELSE_RETURN_NULL(wrapper != nullptr);
+    ASSERT_MATCH_ELSE_RETURN_NULL(wrapper->GetObject() != nullptr);
     if (valueType == napi_undefined) {
         wrapper->AddUndefined(key);
         return nullptr;
@@ -236,6 +238,7 @@ napi_value JSDistributedObject::JSSave(napi_env env, napi_callback_info info)
         napi_status status = napi_unwrap(env, ctxt->self, (void **)&wrapper);
         CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
         ASSERT_MATCH_ELSE_RETURN_VOID(wrapper != nullptr);
+        ASSERT_MATCH_ELSE_RETURN_VOID(wrapper->GetObject() != nullptr);
         ctxt->object = wrapper->GetObject();
     };
     ctxt->GetCbInfo(env, info, getCbOpe);
@@ -243,8 +246,7 @@ napi_value JSDistributedObject::JSSave(napi_env env, napi_callback_info info)
         if (ctxt->status == napi_ok) {
             ctxt->status = napi_new_instance(env,
                 JSDistributedObject::GetSaveResultCons(env, ctxt->object->GetSessionId(),
-                    ctxt->version, ctxt->deviceId),
-                0, nullptr, &result);
+                    ctxt->version, ctxt->deviceId), 0, nullptr, &result);
             CHECK_STATUS_RETURN_VOID(ctxt, "output failed!");
         }
     };
@@ -285,6 +287,7 @@ napi_value JSDistributedObject::JSRevokeSave(napi_env env, napi_callback_info in
         napi_status status = napi_unwrap(env, ctxt->self, (void **)&wrapper);
         CHECK_EQUAL_WITH_RETURN_VOID(status, napi_ok);
         ASSERT_MATCH_ELSE_RETURN_VOID(wrapper != nullptr);
+        ASSERT_MATCH_ELSE_RETURN_VOID(wrapper->GetObject() != nullptr);
         ctxt->object = wrapper->GetObject();
     };
     ctxt->GetCbInfo(env, info, getCbOpe);

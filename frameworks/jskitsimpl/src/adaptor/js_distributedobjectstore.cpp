@@ -97,13 +97,19 @@ napi_value JSDistributedObjectStore::NewDistributedObject(
     status = napi_wrap(
         env, result, objectWrapper,
         [](napi_env env, void *data, void *hint) {
-            LOG_INFO("start delete object");
+            if (data == nullptr) {
+                LOG_WARN("objectWrapper is nullptr.");
+                return;
+            }
             auto objectWrapper = (JSObjectWrapper *)data;
+            if (objectWrapper->GetObject() == nullptr) {
+                delete objectWrapper;
+                return;
+            }
+            LOG_INFO("start delete object");
             DistributedObjectStore::GetInstance(JSDistributedObjectStore::GetBundleName(env))
                 ->DeleteObject(objectWrapper->GetObject()->GetSessionId());
-            if (objectWrapper != nullptr) {
-                delete objectWrapper;
-            }
+            delete objectWrapper;
         },
         nullptr, nullptr);
     RestoreWatchers(env, objectWrapper, objectId);
@@ -172,10 +178,9 @@ napi_value JSDistributedObjectStore::JSDestroyObjectSync(napi_env env, napi_call
     ASSERT_MATCH_ELSE_RETURN_NULL(objectInfo != nullptr && objectWrapper->GetObject() != nullptr);
     objectWrapper->DeleteWatch(env, CHANGE);
     objectWrapper->DeleteWatch(env, STATUS);
-    uint32_t ret = objectInfo->DeleteObject(objectWrapper->GetObject()->GetSessionId());
-    napi_value result = nullptr;
-    napi_create_int32(env, ret, &result);
-    return result;
+    objectInfo->DeleteObject(objectWrapper->GetObject()->GetSessionId());
+    objectWrapper->DestroyObject();
+    return nullptr;
 }
 
 // function on(type: 'change', object: DistributedObject, callback: Callback<ChangedDataObserver>): void;

@@ -33,6 +33,7 @@ public:
     bool isUndefined(char *value);
     void AddUndefined(char *value);
     void DeleteUndefined(char *value);
+    void DestroyObject();
 
 private:
     DistributedObjectStore *objectStore_;

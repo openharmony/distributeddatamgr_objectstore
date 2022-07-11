@@ -87,4 +87,9 @@ void JSObjectWrapper::DeleteUndefined(char *value)
         undefinedProperties.erase(it);
     }
 }
+
+void JSObjectWrapper::DestroyObject()
+{
+    object_ = nullptr;
+}
 } // namespace OHOS::ObjectStore
