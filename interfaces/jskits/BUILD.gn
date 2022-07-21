@@ -113,13 +113,13 @@ ohos_shared_library("distributeddataobject") {
     "//foundation/distributeddatamgr/objectstore/interfaces/innerkits:distributeddataobject_impl",
     "//third_party/bounds_checking_function:libsec_static",
     "//third_party/libuv:uv",
-    "//utils/native/base:utils",
   ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
     "ability_runtime:runtime",
     "access_token:libaccesstoken_sdk",
+    "c_utils:utils",
     "dsoftbus:softbus_client",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
