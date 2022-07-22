@@ -29,7 +29,7 @@ ohos_unittest("NativeObjectStoreTest") {
   configs = [ ":module_private_config" ]
 
   external_deps = [
-    "distributeddataobject:distributeddataobject_impl",
+    "data_object:distributeddataobject_impl",
     "hilog_native:libhilog",
   ]
 

@@ -1,10 +1,10 @@
 {
-    "name": "@ohos/distributeddatamgr_objectstore", 
+    "name": "@ohos/distributeddatamgr_data_object", 
     "version": "",                              
     "description": "The distributed data object management framework is an object-oriented in-memory data management framework",
     "homePage": "https://gitee.com/openharmony",
     "license": "Apache V2",
-    "repository": "https://gitee.com/openharmony/distributeddatamgr_objectstore ",
+    "repository": "https://gitee.com/openharmony/distributeddatamgr_data_object ",
     "domain": "os",
     "language": "",
     "publishAs": "code-segment",
@@ -28,10 +28,10 @@
         }
     ],
     "segment": {
-        "destPath": "foundation/distributeddatamgr/objectstore"
+        "destPath": "foundation/distributeddatamgr/data_object"
     },
     "component": {
-        "name": "distributeddataobject",
+        "name": "data_object",
         "subsystem": "distributeddatamgr",
         "syscap": [
             "SystemCapability.DistributedDataManager.DataObject.DistributedObject"
@@ -62,25 +62,25 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/distributeddatamgr/objectstore/interfaces/jskits:build_module"
+                "//foundation/distributeddatamgr/data_object/interfaces/jskits:build_module"
             ],
             "inner_kits": [
                 {
-                    "name": "//foundation/distributeddatamgr/objectstore/interfaces/innerkits:distributeddataobject_impl",
+                    "name": "//foundation/distributeddatamgr/data_object/interfaces/innerkits:distributeddataobject_impl",
                     "header": {
                         "header_files": [
                             "distributed_object.h",
                             "distributed_objectstore.h",
                             "objectstore_errors.h"
                         ],
-                        "header_base": "//foundation/distributeddatamgr/objectstore/interfaces/innerkits"
+                        "header_base": "//foundation/distributeddatamgr/data_object/interfaces/innerkits"
                     }
                 }
             ],
             "test": [
-                "//foundation/distributeddatamgr/objectstore/frameworks/innerkitsimpl/test/unittest:unittest",
-                "//foundation/distributeddatamgr/objectstore/frameworks/jskitsimpl/test/unittest:unittest",
-                "//foundation/distributeddatamgr/objectstore/frameworks/innerkitsimpl/test/fuzztest/objectstore_fuzzer:fuzztest"
+                "//foundation/distributeddatamgr/data_object/frameworks/innerkitsimpl/test/unittest:unittest",
+                "//foundation/distributeddatamgr/data_object/frameworks/jskitsimpl/test/unittest:unittest",
+                "//foundation/distributeddatamgr/data_object/frameworks/innerkitsimpl/test/fuzztest/objectstore_fuzzer:fuzztest"
             ]
         }
     }

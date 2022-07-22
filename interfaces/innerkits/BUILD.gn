@@ -13,7 +13,7 @@
 import("//build/ohos.gni")
 
 config("objectstore_config") {
-  visibility = [ "//foundation/distributeddatamgr/objectstore:*" ]
+  visibility = [ "//foundation/distributeddatamgr/data_object:*" ]
 
   cflags = [ "-DHILOG_ENABLE" ]
 
@@ -34,7 +34,7 @@ config("objectstore_public_config") {
 }
 
 ohos_shared_library("distributeddataobject_impl") {
-  part_name = "distributeddataobject"
+  part_name = "data_object"
   sources = [
     "../../frameworks/innerkitsimpl/src/adaptor/client_adaptor.cpp",
     "../../frameworks/innerkitsimpl/src/adaptor/distributed_object_impl.cpp",
@@ -74,5 +74,5 @@ ohos_shared_library("distributeddataobject_impl") {
   ]
   public_configs = [ ":objectstore_public_config" ]
   relative_install_dir = "module/data"
-  subsystem_name = "distributeddataobject"
+  subsystem_name = "data_object"
 }

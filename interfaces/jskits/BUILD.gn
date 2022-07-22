@@ -89,7 +89,7 @@ gen_js_obj("distributed_data_object_abc") {
 }
 
 ohos_shared_library("distributeddataobject") {
-  part_name = "distributeddataobject"
+  part_name = "data_object"
   sources = [
     "../../frameworks/jskitsimpl/src/adaptor/js_distributedobject.cpp",
     "../../frameworks/jskitsimpl/src/adaptor/js_distributedobjectstore.cpp",
@@ -109,8 +109,8 @@ ohos_shared_library("distributeddataobject") {
     ":distributed_data_object_js",
     "//foundation/ability/ability_runtime/frameworks/native/ability/native:abilitykit_native",
     "//foundation/ability/ability_runtime/frameworks/native/appkit:app_context",
+    "//foundation/distributeddatamgr/data_object/interfaces/innerkits:distributeddataobject_impl",
     "//foundation/distributeddatamgr/distributeddatamgr/services/distributeddataservice/libs/distributeddb:distributeddb",
-    "//foundation/distributeddatamgr/objectstore/interfaces/innerkits:distributeddataobject_impl",
     "//third_party/bounds_checking_function:libsec_static",
     "//third_party/libuv:uv",
     "//utils/native/base:utils",
@@ -128,5 +128,5 @@ ohos_shared_library("distributeddataobject") {
 
   public_configs = [ ":objectstore_public_config" ]
   relative_install_dir = "module/data"
-  subsystem_name = "distributeddataobject"
+  subsystem_name = "data_object"
 }
