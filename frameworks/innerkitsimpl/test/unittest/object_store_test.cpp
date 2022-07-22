@@ -338,25 +338,7 @@ HWTEST_F(NativeObjectStoreTest, DistributedObject_Save_RevokeSave_001, TestSize.
 {
     std::string bundleName = "default";
     std::string sessionId = "123456";
-    DistributedObjectStore *objectStore = DistributedObjectStore::GetInstance(bundleName);
-    EXPECT_NE(nullptr, objectStore);
-    DistributedObject *object = objectStore->CreateObject(sessionId);
-    EXPECT_NE(nullptr, object);
-    
-    uint32_t ret = object->PutString("name", "zhangsan");
-    EXPECT_EQ(SUCCESS, ret);
-    ret = object->PutDouble("salary", SALARY);
-    EXPECT_EQ(SUCCESS, ret);
-    ret = object->PutBoolean("isTrue", true);
-    EXPECT_EQ(SUCCESS, ret);
-    
-    ret = object->Save("local");
-    EXPECT_EQ(SUCCESS, ret);
-    ret = object->RevokeSave();
-    EXPECT_EQ(SUCCESS, ret);
-    
-    ret = objectStore->DeleteObject(sessionId);
-    EXPECT_EQ(SUCCESS, ret);
+    TestSaveAndRevokeSave(bundleName, sessionId);
 }
 
 /**
