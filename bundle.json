@@ -80,7 +80,7 @@
             "test": [
                 "//foundation/distributeddatamgr/objectstore/frameworks/innerkitsimpl/test/unittest:unittest",
                 "//foundation/distributeddatamgr/objectstore/frameworks/jskitsimpl/test/unittest:unittest",
-				"//foundation/distributeddatamgr/objectstore/frameworks/innerkitsimpl/test/fuzztest/objectstore_fuzzer:fuzztest"
+                "//foundation/distributeddatamgr/objectstore/frameworks/innerkitsimpl/test/fuzztest/objectstore_fuzzer:fuzztest"
             ]
         }
     }
