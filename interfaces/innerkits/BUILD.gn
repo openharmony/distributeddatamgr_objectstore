@@ -74,5 +74,5 @@ ohos_shared_library("distributeddataobject_impl") {
   ]
   public_configs = [ ":objectstore_public_config" ]
   relative_install_dir = "module/data"
-  subsystem_name = "data_object"
+  subsystem_name = "distributeddatamgr"
 }
