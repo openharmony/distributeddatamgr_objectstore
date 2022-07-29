@@ -24,14 +24,14 @@ config("module_private_config") {
 ohos_fuzztest("ObjectStoreFuzzTest") {
   module_out_path = "data_object/impl"
 
-  fuzz_config_file = "//foundation/distributeddatamgr/objectstore/frameworks/innerkitsimpl/test/fuzztest/objectstore_fuzzer"
+  fuzz_config_file = "//foundation/distributeddatamgr/data_object/frameworks/innerkitsimpl/test/fuzztest/objectstore_fuzzer"
 
   sources = [ "objectstore_fuzzer.cpp" ]
 
   configs = [ ":module_private_config" ]
 
   external_deps = [
-    "distributeddataobject:distributeddataobject_impl",
+    "data_object:distributeddataobject_impl",
     "hilog_native:libhilog",
   ]
 }
